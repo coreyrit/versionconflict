@@ -25,8 +25,18 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import capitalvices.Game;
+import capitalvices.PanelRenderer;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
+import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -44,8 +54,37 @@ public class Main {
   @Autowired
   private DataSource dataSource;
 
+  private Game game = new Game();
+  private PanelRenderer panelRenderer = new PanelRenderer(game);
+
   public static void main(String[] args) throws Exception {
     SpringApplication.run(Main.class, args);
+  }
+
+  @RequestMapping(path = "/game", method = RequestMethod.GET)
+  String game() {
+    return "game";
+  }
+
+  @RequestMapping(path = "/gameimg", method = RequestMethod.GET)
+  public void gameImage(@RequestParam(name = "x", defaultValue = "0") Integer x, @RequestParam(name = "y", defaultValue = "0") Integer y, HttpServletResponse response) throws IOException {
+      String contentType = "application/octet-stream";
+      response.setContentType(contentType);
+      OutputStream out = response.getOutputStream();
+
+//      BufferedImage img = ImageIO.read(getClass().getResource("/public/lang-logo.png"));
+    if(x > 0 && y > 0) {
+      game.mouseClicked(x, y);
+    }
+
+
+      BufferedImage img = new BufferedImage(panelRenderer.getWindowWidth(), panelRenderer.getWindowHeight(), BufferedImage.TYPE_INT_ARGB);
+      Graphics graphics = img.getGraphics();
+      panelRenderer.paint(graphics);
+
+      ImageIO.write(img,"png", out);
+
+      out.close();
   }
 
   @RequestMapping("/")
