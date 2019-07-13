@@ -3,10 +3,10 @@ package versionconflict;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
 
 public class Card {
     private int number;
+    private Rectangle bounds = new Rectangle(0, 0, 0, 0);
 
     private CircleSymbol circleSymbol = CircleSymbol.Blank;
     private Special special = null;
@@ -165,5 +165,13 @@ public class Card {
 
     public Image getImage() {
         return image;
+    }
+
+    public Rectangle getBounds() {
+        return bounds;
+    }
+
+    public void setBounds(Rectangle bounds) {
+        this.bounds = bounds;
     }
 }

@@ -149,32 +149,16 @@ public class Game { //} extends JFrame implements MouseListener, MouseMotionList
         return player2;
     }
 
-    public void mouseClicked(MouseEvent e) {
-
-    }
-
-    public void mousePressed(MouseEvent e) {
-
-    }
-
-    public void mouseReleased(MouseEvent e) {
-
-    }
-
-    public void mouseEntered(MouseEvent e) {
-
-    }
-
-    public void mouseExited(MouseEvent e) {
-
-    }
-
-    public void mouseDragged(MouseEvent e) {
-
-    }
-
-    public void mouseMoved(MouseEvent e) {
-
+    public void mouseClicked(int x, int y) {
+        for(Card card : player1.getHand()) {
+            if(card.getBounds().contains(x, y)) {
+                if(player1.getSelected().contains(card)) {
+                    player1.getSelected().remove(card);
+                } else if(player1.getSelected().size() < 5) {
+                    player1.getSelected().add(card);
+                }
+            }
+        }
     }
 }
 

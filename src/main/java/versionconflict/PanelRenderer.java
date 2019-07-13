@@ -30,14 +30,25 @@ public class PanelRenderer implements ImageObserver {
         int x = 20;
         int y = 500;
 
+        Graphics2D g2d = (Graphics2D)g;
+        g2d.setStroke(new BasicStroke(3));
+        g.setColor(Color.BLUE);
+
         for(Card card : game.getPlayer1().getHand()) {
+            card.setBounds(new Rectangle(x, y, cw, ch));
             g.drawImage(card.getImage(), x, y, cw, ch, this);
+
+            if(game.getPlayer1().getSelected().contains(card)) {
+                g.drawRect(x, y, cw, ch);
+            }
+
             x += cw + 20;
         }
 
         x = 20;
         y = 20;
         for(Card card : game.getPlayer2().getHand()) {
+            card.setBounds(new Rectangle(x, y, cw, ch));
             g.drawImage(player2back, x, y, cw, ch, this);
             x += cw + 20;
         }
