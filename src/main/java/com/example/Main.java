@@ -26,8 +26,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import capitalvices.Game;
-import capitalvices.PanelRenderer;
+import versionconflict.Game;
+import versionconflict.PanelRenderer;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.imageio.ImageIO;
@@ -72,9 +72,9 @@ public class Main {
       OutputStream out = response.getOutputStream();
 
 //      BufferedImage img = ImageIO.read(getClass().getResource("/public/lang-logo.png"));
-    if(x > 0 && y > 0) {
+//    if(x > 0 && y > 0) {
       game.mouseClicked(x, y);
-    }
+//    }
 
 
       BufferedImage img = new BufferedImage(panelRenderer.getWindowWidth(), panelRenderer.getWindowHeight(), BufferedImage.TYPE_INT_ARGB);
