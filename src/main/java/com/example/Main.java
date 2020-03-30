@@ -42,6 +42,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Controller
 @SpringBootApplication
@@ -53,8 +54,9 @@ public class Main {
   @Autowired
   private DataSource dataSource;
 
-  private Game game = new Game();
-  private PanelRenderer panelRenderer = new PanelRenderer(game);
+  private Map<String, Game> games = new ConcurrentHashMap<>();
+
+  private Map<Game, PanelRenderer> panelRenderers = new ConcurrentHashMap<>();
 
   public static void main(String[] args) throws Exception {
     SpringApplication.run(Main.class, args);
@@ -66,15 +68,30 @@ public class Main {
   }
 
   @RequestMapping(path = "/gameimg", method = RequestMethod.GET)
-  public void gameImage(@RequestParam(name = "x", defaultValue = "0") Integer x, @RequestParam(name = "y", defaultValue = "0") Integer y, HttpServletResponse response) throws IOException {
+  public void gameImage(
+          @RequestParam(name = "x", defaultValue = "-10") Integer x,
+          @RequestParam(name = "y", defaultValue = "-10") Integer y,
+          @RequestParam(name = "id", defaultValue = "0") String id,
+          HttpServletResponse response) throws IOException {
       String contentType = "application/octet-stream";
       response.setContentType(contentType);
       OutputStream out = response.getOutputStream();
 
 //      BufferedImage img = ImageIO.read(getClass().getResource("/public/lang-logo.png"));
 //    if(x > 0 && y > 0) {
+
+    Game game = null;
+    if(games.containsKey(id)) {
+      game = games.get(id);
+    } else {
+      game = new Game();
+      games.put(id, game);
+      panelRenderers.put(game, new PanelRenderer(game));
+    }
       game.mouseClicked(x, y);
 //    }
+
+    PanelRenderer panelRenderer = panelRenderers.get(game);
 
 
       BufferedImage img = new BufferedImage(panelRenderer.getWindowWidth(), panelRenderer.getWindowHeight(), BufferedImage.TYPE_INT_ARGB);

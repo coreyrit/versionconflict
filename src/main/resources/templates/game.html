@@ -1,6 +1,29 @@
 <html>
 <head>
     <script>
+        function setCookie(cname, cvalue, exdays) {
+            var d = new Date();
+            d.setTime(d.getTime() + (exdays*24*60*60*1000));
+            var expires = "expires="+ d.toUTCString();
+            document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+        }
+
+        function getCookie(cname) {
+            var name = cname + "=";
+            var decodedCookie = decodeURIComponent(document.cookie);
+            var ca = decodedCookie.split(';');
+            for(var i = 0; i <ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') {
+                    c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                    return c.substring(name.length, c.length);
+                }
+            }
+            return "";
+        }
+
         function grayOut(vis, options) {
             // Pass true to gray out screen, false to ungray
             // options are optional.  This is a JSON object with the following (optional) properties
@@ -58,6 +81,12 @@
         }
 
         function doSomething(e) {
+            var id = getCookie("id");
+            if(id === "") {
+                setCookie("id", new Date().getTime(), 1)
+                id = getCookie("id")
+            }
+
             var posx = 0;
             var posy = 0;
             if (!e) var e = window.event;
@@ -74,7 +103,7 @@
             // posx and posy contain the mouse position relative to the document
             // Do something with this information
             grayOut(true);
-            document.getElementById("game").src = "/gameimg?x=" + posx + "&y=" + posy;
+            document.getElementById("game").src = "/gameimg?x=" + posx + "&y=" + posy + "&id=" + id;
         }
     </script>
 </head>
