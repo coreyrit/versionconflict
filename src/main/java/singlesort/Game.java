@@ -318,6 +318,11 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
 
     private void swapSelections() {
         putAllInPile(hand.getSelected());
+        if(hand.getSelected().getMaterial() == Component.Material.Plastic) {
+            for(Component comp : hand.getSelected()) {
+                ((Plastic)comp).roll();
+            }
+        }
         hand.removeAll(hand.getSelected());
         table.removeAll(table.getSelected());
         hand.addAll(table.getSelected());
