@@ -60,7 +60,7 @@ public class Plastic extends Component {
         return new Plastic(Color.yellow, Color.black) ;
     }
 
-    private static Font font = new Font("Arial", Font.PLAIN, 128);
+    private static Font font = new Font("Arial", Font.PLAIN, 100);
 
     public void draw(Graphics g, int x, int y) {
         g.setColor(color);
