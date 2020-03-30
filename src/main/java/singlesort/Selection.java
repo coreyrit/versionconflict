@@ -1,6 +1,5 @@
 package singlesort;
 
-import castlepanic.base.cards.MaterialCard;
 import singlesort.component.Cardboard;
 import singlesort.component.Component;
 

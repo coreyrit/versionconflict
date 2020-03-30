@@ -11,7 +11,7 @@ import java.awt.event.MouseMotionListener;
 import java.util.*;
 import java.util.List;
 
-public class Game extends JFrame implements MouseListener, MouseMotionListener {
+public class Game { //extends JFrame implements MouseListener, MouseMotionListener {
     public static Random random = new Random();
 
     public static final int ROWS = 9;
@@ -48,21 +48,21 @@ public class Game extends JFrame implements MouseListener, MouseMotionListener {
         SingleSort = this;
 
         PanelRenderer panelRenderer1 = new PanelRenderer(this);
-        this.setLayout(new BorderLayout());
-        this.add(panelRenderer1, BorderLayout.CENTER);
-        this.pack();
+//        this.setLayout(new BorderLayout());
+//        this.add(panelRenderer1, BorderLayout.CENTER);
+//        this.pack();
 
-        setTitle("Single-Sort");
-        setSize(windowWidth, windowHeight);
-        setResizable(false);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setVisible(true);
+//        setTitle("Single-Sort");
+//        setSize(windowWidth, windowHeight);
+//        setResizable(false);
+//        setDefaultCloseOperation(EXIT_ON_CLOSE);
+//        setVisible(true);
 
-        insets = getInsets();
-        setSize(insets.left + windowWidth + insets.right, insets.top + windowHeight + insets.bottom);
+//        insets = getInsets();
+//        setSize(insets.left + windowWidth + insets.right, insets.top + windowHeight + insets.bottom);
 
-        this.addMouseListener(this);
-        this.addMouseMotionListener(this);
+//        this.addMouseListener(this);
+//        this.addMouseMotionListener(this);
     }
 
     public List<Component> getBox() {
@@ -326,21 +326,24 @@ public class Game extends JFrame implements MouseListener, MouseMotionListener {
     }
 
     public void mouseClicked(MouseEvent e) {
-        int r = (e.getY()-20) / CELL_SIZE;
-        int c = e.getX() / CELL_SIZE;
+        mouseClicked(e.getX(), e.getY()-20);
+    }
+    public void mouseClicked(int x, int y) {
+        int r = y / CELL_SIZE;
+        int c = x / CELL_SIZE;
 
         int index = -1;
         if(c == COLUMNS) {
-            index = (e.getY()-20) / CELL_SIZE;
+            index = y / CELL_SIZE;
         } else if(c == COLUMNS+1) {
-            index = ((e.getY()-20) / CELL_SIZE) + 10;
+            index = (y / CELL_SIZE) + 10;
         }
 
         Component component = null;
         if(r < ROWS && c < COLUMNS) {
             component = table.get(r, c);
         }
-        if(component == null && e.getX() > CELL_SIZE * COLUMNS && index >= 0 && index < hand.size()) {
+        if(component == null && x > CELL_SIZE * COLUMNS && index >= 0 && index < hand.size()) {
             component = hand.get(index);
         }
         if(component != null && component.isHighlight()) {
@@ -421,7 +424,7 @@ public class Game extends JFrame implements MouseListener, MouseMotionListener {
         }
 
         Rectangle endTurnButton = new Rectangle(Game.COLUMNS*Game.CELL_SIZE - (2*Game.CELL_SIZE) + 10, Game.ROWS*Game.CELL_SIZE + 10, 2*Game.CELL_SIZE - 20, Game.CELL_SIZE - 20);
-        if(endTurnButton.contains(e.getX(), e.getY()-20) && state != State.Take && state != State.Collect) {
+        if(endTurnButton.contains(x, y) && state != State.Take && state != State.Collect) {
             endTurn();
         }
 
@@ -430,7 +433,7 @@ public class Game extends JFrame implements MouseListener, MouseMotionListener {
             // do it again after ending the turn
             updateHighlights();
         }
-        this.repaint();
+//        this.repaint();
     }
 
     public void mousePressed(MouseEvent e) {

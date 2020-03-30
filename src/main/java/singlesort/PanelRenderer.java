@@ -13,9 +13,18 @@ public class PanelRenderer extends JPanel {
         this.game = game;
     }
 
+    public int getWindowWidth() {
+        return Game.windowWidth;
+    }
+
+    public int getWindowHeight() {
+        return Game.windowHeight;
+    }
+
     @Override
     public void paint(Graphics g) {
         super.paint(g);
+        g.fillRect(0, 0, getWindowWidth(), getWindowHeight());
         try {
             if (game != null) {
                 for(int r = 0; r < Game.ROWS; r++) {
