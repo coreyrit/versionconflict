@@ -81,6 +81,18 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
         return state;
     }
 
+    public List<Cardboard> getTake() {
+        return take;
+    }
+
+    public Cardboard getLastSelected() {
+        return lastSelected;
+    }
+
+    public void setLastSelected(Cardboard lastSelected) {
+        this.lastSelected = lastSelected;
+    }
+
     public void setup() {
         int[] cleanCardboards = new int[] { 7, 6, 3, 2, 1, 1, 1 };
         int[] dirtyCardboards = new int[] { 3, 2, 1, 1, 1, 1 };

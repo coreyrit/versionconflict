@@ -1,5 +1,7 @@
 package singlesort;
 
+import singlesort.component.Cardboard;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -54,10 +56,20 @@ public class PanelRenderer extends JPanel {
                 g.setFont(font2);
                 switch(game.getGameState()) {
                     case Take:
-                        g.drawString("Choose a component in the pile to Take (" + (game.getHand().getSelected().size()+1) + " of 2).", 300, Game.windowHeight-55);
+                        g.drawString("Choose a component in the pile to Take (" + (game.getTake().size()+1) + " of 2).", 300, Game.windowHeight-55);
                         break;
                     case Rot:
-                        g.drawString("Choose a dirty cardboard to Rot or select a component in your collection to perform actions.", 300, Game.windowHeight-55);
+                        String colorWord;
+                        if(game.getLastSelected().getColor().equals(Color.blue)) {
+                            colorWord = "blue";
+                        } else if(game.getLastSelected().getColor().equals(Color.yellow)) {
+                            colorWord = "yellow";
+                        } else {
+                            colorWord = "green";
+                        }
+
+                        g.drawString("Choose a dirty cardboard to Rot the clean " + colorWord + " " + game.getLastSelected().getFace().getValue() + ".", 300, Game.windowHeight-55);
+                        g.drawString("Or select a component in your collection to perform actions.", 300, Game.windowHeight-25);
                         break;
                     case RecycleOrReduce:
                         if(game.getHand().getSelected().size() == 0) {
