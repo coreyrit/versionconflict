@@ -34,7 +34,8 @@ public class Plastic extends Component {
     private Face face;
     private Color textColor;
 
-    private Plastic(Color color, Color textColor) {
+    private Plastic(Game game, Color color, Color textColor) {
+        super(game);
         this.color = color;
         this.textColor = textColor;
         roll(); //randomize the face to start
@@ -48,16 +49,16 @@ public class Plastic extends Component {
         return face;
     }
 
-    public static Plastic createGreenPlastic() {
-        return new Plastic(Color.green.darker(), Color.white) ;
+    public static Plastic createGreenPlastic(Game game) {
+        return new Plastic(game, Color.green.darker(), Color.white) ;
     }
 
-    public static Plastic createBluePlastic() {
-        return new Plastic(Color.blue, Color.white) ;
+    public static Plastic createBluePlastic(Game game) {
+        return new Plastic(game, Color.blue, Color.white) ;
     }
 
-    public static Plastic createYellowPlastic() {
-        return new Plastic(Color.yellow, Color.black) ;
+    public static Plastic createYellowPlastic(Game game) {
+        return new Plastic(game, Color.yellow, Color.black) ;
     }
 
     private static Font font = new Font("Arial", Font.PLAIN, 100);

@@ -7,7 +7,11 @@ import java.util.Collection;
 
 public class Table {
     private Component[][] table = new Component[Game.ROWS][Game.COLUMNS];
-    private Selection selection = new Selection();
+    private Selection selection;
+
+    public Table(Game game) {
+        this.selection = new Selection(game);
+    }
 
     public Component get(int r, int c) {
         return table[r][c];

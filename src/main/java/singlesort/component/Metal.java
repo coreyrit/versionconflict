@@ -23,7 +23,8 @@ public class Metal extends Component {
 
     private Type type;
 
-    private Metal(Type type) {
+    private Metal(Game game, Type type) {
+        super(game);
         this.type = type;
         this.color = this.type.color;
     }
@@ -32,16 +33,16 @@ public class Metal extends Component {
         return type;
     }
 
-    public static Metal createGoldMetal() {
-        return new Metal(Type.Gold);
+    public static Metal createGoldMetal(Game game) {
+        return new Metal(game, Type.Gold);
     }
 
-    public static Metal createSilverMetal() {
-        return new Metal(Type.Silver);
+    public static Metal createSilverMetal(Game game) {
+        return new Metal(game, Type.Silver);
     }
 
-    public static Metal createBronzeMetal() {
-        return new Metal(Type.Bronze);
+    public static Metal createBronzeMetal(Game game) {
+        return new Metal(game, Type.Bronze);
     }
 
     public void draw(Graphics g, int x, int y) {

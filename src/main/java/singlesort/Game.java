@@ -38,11 +38,8 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
         CleanUp
     }
 
-    public static Game SingleSort;
-
     public Game() {
         setup();
-        SingleSort = this;
 
         PanelRenderer panelRenderer1 = new PanelRenderer(this);
 //        this.setLayout(new BorderLayout());
@@ -98,8 +95,8 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
     public void setup() {
         box = new Stack<Component>();
 
-        table = new Table();
-        hand = new Hand();
+        table = new Table(this);
+        hand = new Hand(this);
 
         state = State.Take;
         take = new ArrayList<Cardboard>();
@@ -109,34 +106,34 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
         int[] dirtyCardboards = new int[] { 3, 2, 1, 1, 1, 1 };
         for(int v = 1; v <= cleanCardboards.length; v++) {
             for(int i = 0; i < cleanCardboards[v-1]; i++) {
-                box.add(Cardboard.createGreenCleanCardboard(v));
-                box.add(Cardboard.createBlueCleanCardboard(v));
-                box.add(Cardboard.createYellowCleanCardboard(v));
+                box.add(Cardboard.createGreenCleanCardboard(this, v));
+                box.add(Cardboard.createBlueCleanCardboard(this, v));
+                box.add(Cardboard.createYellowCleanCardboard(this, v));
             }
         }
         for(int v = 1; v <= dirtyCardboards.length; v++) {
             for(int i = 0; i < dirtyCardboards[v-1]; i++) {
-                box.add(Cardboard.createGreenDirtyCardboard(v));
-                box.add(Cardboard.createBlueDirtyCardboard(v));
-                box.add(Cardboard.createYellowDirtyCardboard(v));
+                box.add(Cardboard.createGreenDirtyCardboard(this, v));
+                box.add(Cardboard.createBlueDirtyCardboard(this, v));
+                box.add(Cardboard.createYellowDirtyCardboard(this, v));
             }
         }
 
         for(int i = 0; i < 10; i++) {
-            box.add(Plastic.createGreenPlastic());
-            box.add(Plastic.createBluePlastic());
-            box.add(Plastic.createYellowPlastic());
+            box.add(Plastic.createGreenPlastic(this));
+            box.add(Plastic.createBluePlastic(this));
+            box.add(Plastic.createYellowPlastic(this));
         }
 
         for(int i = 0; i < 4; i++) {
-            box.add(Glass.createGreenGlass());
-            box.add(Glass.createBlueGlass());
-            box.add(Glass.createYellowGlass());
+            box.add(Glass.createGreenGlass(this));
+            box.add(Glass.createBlueGlass(this));
+            box.add(Glass.createYellowGlass(this));
         }
 
-        box.add(Metal.createGoldMetal());
-        box.add(Metal.createSilverMetal());
-        box.add(Metal.createBronzeMetal());
+        box.add(Metal.createGoldMetal(this));
+        box.add(Metal.createSilverMetal(this));
+        box.add(Metal.createBronzeMetal(this));
 
         Collections.shuffle(box);
 

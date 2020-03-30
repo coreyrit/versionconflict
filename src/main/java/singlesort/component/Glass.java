@@ -6,7 +6,8 @@ import java.awt.*;
 
 public class Glass extends Component {
 
-    private Glass(Color color) {
+    private Glass(Game game, Color color) {
+        super(game);
         this.color = color;
     }
 
@@ -14,16 +15,16 @@ public class Glass extends Component {
         return color;
     }
 
-    public static Glass createGreenGlass() {
-        return new Glass(Color.green.darker());
+    public static Glass createGreenGlass(Game game) {
+        return new Glass(game, Color.green.darker());
     }
 
-    public static Glass createBlueGlass() {
-        return new Glass(Color.blue);
+    public static Glass createBlueGlass(Game game) {
+        return new Glass(game, Color.blue);
     }
 
-    public static Glass createYellowGlass() {
-        return new Glass(Color.yellow);
+    public static Glass createYellowGlass(Game game) {
+        return new Glass(game, Color.yellow);
     }
 
     public void draw(Graphics g, int x, int y) {

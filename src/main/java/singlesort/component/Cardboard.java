@@ -86,7 +86,8 @@ public class Cardboard extends Component {
     private Face face;
     private Color textColor;
 
-    private Cardboard(Face face, Color color, Color textColor) {
+    private Cardboard(Game game, Face face, Color color, Color textColor) {
+        super(game);
         this.face = face;
         this.color = color;
         this.textColor = textColor;
@@ -109,28 +110,28 @@ public class Cardboard extends Component {
         return face;
     }
 
-    public static Cardboard createGreenCleanCardboard(int value) {
-        return new Cardboard(Face.fromTypeAndValue(true, value), Color.green.darker(), Color.white);
+    public static Cardboard createGreenCleanCardboard(Game game, int value) {
+        return new Cardboard(game, Face.fromTypeAndValue(true, value), Color.green.darker(), Color.white);
     }
 
-    public static Cardboard createBlueCleanCardboard(int value) {
-        return new Cardboard(Face.fromTypeAndValue(true, value), Color.blue, Color.white);
+    public static Cardboard createBlueCleanCardboard(Game game, int value) {
+        return new Cardboard(game, Face.fromTypeAndValue(true, value), Color.blue, Color.white);
     }
 
-    public static Cardboard createYellowCleanCardboard(int value) {
-        return new Cardboard(Face.fromTypeAndValue(true, value), Color.yellow, Color.black);
+    public static Cardboard createYellowCleanCardboard(Game game, int value) {
+        return new Cardboard(game, Face.fromTypeAndValue(true, value), Color.yellow, Color.black);
     }
 
-    public static Cardboard createGreenDirtyCardboard(int value) {
-        return new Cardboard(Face.fromTypeAndValue(false, value), Color.green.darker(), Color.white);
+    public static Cardboard createGreenDirtyCardboard(Game game, int value) {
+        return new Cardboard(game, Face.fromTypeAndValue(false, value), Color.green.darker(), Color.white);
     }
 
-    public static Cardboard createBlueDirtyCardboard(int value) {
-        return new Cardboard(Face.fromTypeAndValue(false, value), Color.blue, Color.white);
+    public static Cardboard createBlueDirtyCardboard(Game game, int value) {
+        return new Cardboard(game, Face.fromTypeAndValue(false, value), Color.blue, Color.white);
     }
 
-    public static Cardboard createYellowDirtyCardboard(int value) {
-        return new Cardboard(Face.fromTypeAndValue(false, value), Color.yellow, Color.black);
+    public static Cardboard createYellowDirtyCardboard(Game game, int value) {
+        return new Cardboard(game, Face.fromTypeAndValue(false, value), Color.yellow, Color.black);
     }
 
     private static Font font = new Font("Arial", Font.PLAIN, 48);

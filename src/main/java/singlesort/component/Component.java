@@ -6,12 +6,18 @@ import singlesort.PanelRenderer;
 import java.awt.*;
 
 public abstract class Component {
+    private Game game;
+
     public enum Material {
         None,
         Cardboad,
         Plastic,
         Glass,
         Metal
+    }
+
+    protected Component(Game game) {
+        this.game = game;
     }
 
     protected Color color;
@@ -33,7 +39,7 @@ public abstract class Component {
     }
 
     protected void setStroke(Graphics g) {
-        if(Game.SingleSort.getHand().getSelected().contains(this) || Game.SingleSort.getTable().getSelected().contains(this)) {
+        if(game.getHand().getSelected().contains(this) || game.getTable().getSelected().contains(this)) {
             g.setColor(Color.magenta);
             ((Graphics2D)g).setStroke(PanelRenderer.fatStroke);
         } else if(highlight) {

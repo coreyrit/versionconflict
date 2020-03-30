@@ -7,7 +7,11 @@ import singlesort.component.Plastic;
 import java.util.ArrayList;
 
 public class Hand extends ArrayList<Component> {
-    private Selection selected = new Selection();
+    private Selection selected;
+
+    public Hand(Game game) {
+        this.selected = new Selection(game);
+    }
 
     public Selection getSelected() {
         return selected;

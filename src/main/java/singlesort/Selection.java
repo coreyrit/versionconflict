@@ -11,6 +11,12 @@ public class Selection extends HashSet<Component> {
         return size() > 0 ? iterator().next().getColor() : Color.black;
     }
 
+    private Game game;
+
+    public Selection(Game game) {
+        this.game = game;
+    }
+
     public Component.Material getMaterial() {
         return size() > 0 ? iterator().next().getMaterial() : Component.Material.None;
     }
@@ -26,8 +32,8 @@ public class Selection extends HashSet<Component> {
             if(!component.getMaterial().equals(getMaterial()) ||
                     (component.getMaterial() != Component.Material.Glass && !component.getColor().equals(getColor()))) {
                 this.clear();
-                if(this == Game.SingleSort.getHand().getSelected()) {
-                    Game.SingleSort.getTable().getSelected().clear();
+                if(this == game.getHand().getSelected()) {
+                    game.getTable().getSelected().clear();
                 }
             }
             this.add(component);
