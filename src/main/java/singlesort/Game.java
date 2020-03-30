@@ -382,7 +382,7 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
         if(component == null && x > CELL_SIZE * COLUMNS && index >= 0 && index < hand.size()) {
             component = hand.get(index);
         }
-        if(component != null && component.isHighlight()) {
+        if(!gameOver() && component != null && component.isHighlight()) {
             if(!handSelect(component)) {
                 switch (state) {
                     case Take:
