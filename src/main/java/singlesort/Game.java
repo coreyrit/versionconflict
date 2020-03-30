@@ -457,12 +457,10 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
         }
 
         Rectangle endTurnButton = new Rectangle(Game.COLUMNS*Game.CELL_SIZE - (2*Game.CELL_SIZE) + 10, Game.ROWS*Game.CELL_SIZE + 10, 2*Game.CELL_SIZE - 20, Game.CELL_SIZE - 20);
-        if(endTurnButton.contains(x, y) && state != State.Take && state != State.Collect) {
-            if(gameOver()) {
-                setup();
-            } else {
-                endTurn();
-            }
+        if(gameOver() && endTurnButton.contains(x, y)) {
+            setup();
+        } else if(endTurnButton.contains(x, y) && state != State.Take && state != State.Collect) {
+            endTurn();
         }
 
         if(!updateHighlights()) {
