@@ -11,6 +11,9 @@ public class PanelRenderer extends JPanel {
     private static Font font1 = new Font("Arial", Font.PLAIN, 48);
     private static Font font2 = new Font("Arial", Font.PLAIN, 18);
 
+    public static Stroke normalStroke = new BasicStroke(1);
+    public static Stroke fatStroke = new BasicStroke(4);
+
     public PanelRenderer(Game game) {
         this.game = game;
     }
@@ -22,6 +25,7 @@ public class PanelRenderer extends JPanel {
     public int getWindowHeight() {
         return Game.windowHeight;
     }
+
 
     @Override
     public void paint(Graphics g) {
@@ -37,7 +41,7 @@ public class PanelRenderer extends JPanel {
                     }
                 }
                 g.setColor(Color.black);
-                ((Graphics2D)g).setStroke(new BasicStroke(2));
+                ((Graphics2D)g).setStroke(normalStroke);
                 g.drawLine(Game.COLUMNS*Game.CELL_SIZE, 0, Game.COLUMNS*Game.CELL_SIZE, Game.windowHeight);
 
                 for(int i = 0; i < game.getHand().size(); i++) {
@@ -68,7 +72,7 @@ public class PanelRenderer extends JPanel {
                             colorWord = "green";
                         }
 
-                        g.drawString("Choose a dirty cardboard to Rot the clean " + colorWord + " " + game.getLastSelected().getFace().getValue() + ".", 300, Game.windowHeight-55);
+                        g.drawString("Choose a dirty cardboard to Rot your clean " + colorWord + " " + game.getLastSelected().getFace().getValue() + ".", 300, Game.windowHeight-55);
                         g.drawString("Or select a component in your collection to perform actions.", 300, Game.windowHeight-25);
                         break;
                     case RecycleOrReduce:
@@ -113,7 +117,7 @@ public class PanelRenderer extends JPanel {
                 g.setColor(Color.red);
                 g.fillRect(Game.COLUMNS*Game.CELL_SIZE - (2*Game.CELL_SIZE) + 10, Game.ROWS*Game.CELL_SIZE + 10, 2*Game.CELL_SIZE - 20, Game.CELL_SIZE - 20);
                 g.setColor(Color.black);
-                ((Graphics2D)g).setStroke(new BasicStroke(4));
+                ((Graphics2D)g).setStroke(fatStroke);
                 g.drawRect(Game.COLUMNS*Game.CELL_SIZE - (2*Game.CELL_SIZE) + 10, Game.ROWS*Game.CELL_SIZE + 10, 2*Game.CELL_SIZE - 20, Game.CELL_SIZE - 20);
                 g.setColor(Color.white);
                 g.drawString("End Turn", Game.COLUMNS*Game.CELL_SIZE - (2*Game.CELL_SIZE) + 10+50, Game.ROWS*Game.CELL_SIZE + 10+50);

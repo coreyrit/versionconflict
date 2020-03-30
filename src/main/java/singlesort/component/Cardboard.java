@@ -1,6 +1,7 @@
 package singlesort.component;
 
 import singlesort.Game;
+import singlesort.PanelRenderer;
 
 import java.awt.*;
 
@@ -136,17 +137,7 @@ public class Cardboard extends Component {
             g.setColor(Color.orange.darker());
         }
         g.fillPolygon(new int[] {x+10, x+50, x+90}, new int[] {y+90, y+10, y+90}, 3);
-
-        if(Game.SingleSort.getHand().getSelected().contains(this) || Game.SingleSort.getTable().getSelected().contains(this)) {
-            g.setColor(Color.magenta);
-            ((Graphics2D)g).setStroke(new BasicStroke(4));
-        } else if(highlight) {
-            g.setColor(Color.black);
-            ((Graphics2D)g).setStroke(new BasicStroke(4));
-        } else {
-            g.setColor(Color.black);
-            ((Graphics2D)g).setStroke(new BasicStroke(1));
-        }
+        setStroke(g);
         g.drawPolygon(new int[] {x+10, x+50, x+90}, new int[] {y+90, y+10, y+90}, 3);
 
         if(faceUp) {

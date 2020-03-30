@@ -61,6 +61,7 @@ public class Plastic extends Component {
     }
 
     private static Font font = new Font("Arial", Font.PLAIN, 100);
+    private static Stroke stroke = new BasicStroke(8);
 
     public void draw(Graphics g, int x, int y) {
         g.setColor(color);
@@ -69,19 +70,10 @@ public class Plastic extends Component {
         g.setColor(textColor);
         g.drawString(face.text, x+5, y+85);
         g.setColor(color);
-        ((Graphics2D)g).setStroke(new BasicStroke(8));
+        ((Graphics2D)g).setStroke(stroke);
         g.drawRect(x + 17, y + 17, 64, 64);
 
-        if(Game.SingleSort.getHand().getSelected().contains(this)) {
-            g.setColor(Color.magenta);
-            ((Graphics2D)g).setStroke(new BasicStroke(4));
-        } else if(highlight) {
-            g.setColor(Color.black);
-            ((Graphics2D)g).setStroke(new BasicStroke(4));
-        } else {
-            g.setColor(Color.black);
-            ((Graphics2D)g).setStroke(new BasicStroke(1));
-        }
+        setStroke(g);
 
         g.drawRect(x + 15, y + 15, 70, 70);
     }

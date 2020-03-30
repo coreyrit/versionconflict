@@ -1,5 +1,8 @@
 package singlesort.component;
 
+import singlesort.Game;
+import singlesort.PanelRenderer;
+
 import java.awt.*;
 
 public abstract class Component {
@@ -27,5 +30,18 @@ public abstract class Component {
 
     public Color getColor() {
         return color;
+    }
+
+    protected void setStroke(Graphics g) {
+        if(Game.SingleSort.getHand().getSelected().contains(this) || Game.SingleSort.getTable().getSelected().contains(this)) {
+            g.setColor(Color.magenta);
+            ((Graphics2D)g).setStroke(PanelRenderer.fatStroke);
+        } else if(highlight) {
+            g.setColor(Color.black);
+            ((Graphics2D)g).setStroke(PanelRenderer.fatStroke);
+        } else {
+            g.setColor(Color.black);
+            ((Graphics2D)g).setStroke(PanelRenderer.normalStroke);
+        }
     }
 }
