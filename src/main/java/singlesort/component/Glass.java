@@ -31,7 +31,7 @@ public class Glass extends Component {
         g.fillOval(x+10, y+10, 80, 80);
 
         if(Game.SingleSort.getHand().getSelected().contains(this)) {
-            g.setColor(Color.red);
+            g.setColor(Color.magenta);
             ((Graphics2D)g).setStroke(new BasicStroke(4));
         } else if(highlight) {
             g.setColor(Color.black);

@@ -73,7 +73,7 @@ public class Plastic extends Component {
         g.drawRect(x + 17, y + 17, 64, 64);
 
         if(Game.SingleSort.getHand().getSelected().contains(this)) {
-            g.setColor(Color.red);
+            g.setColor(Color.magenta);
             ((Graphics2D)g).setStroke(new BasicStroke(4));
         } else if(highlight) {
             g.setColor(Color.black);
