@@ -3,11 +3,8 @@ package singlesort;
 import singlesort.component.*;
 import singlesort.component.Component;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.util.*;
 import java.util.List;
 
@@ -20,16 +17,16 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
 
     public static int windowWidth = COLUMNS*CELL_SIZE+200;
     public static int windowHeight = ROWS*CELL_SIZE + 100;
-    private Insets insets;
+//    private Insets insets;
 
-    private Stack<Component> box = new Stack<Component>();
+    private Stack<Component> box;
 
-    private Table table = new Table();
-    private Hand hand = new Hand();
+    private Table table;
+    private Hand hand;
 
-    private State state = State.Take;
-    private List<Cardboard> take = new ArrayList<Cardboard>();
-    private Cardboard lastSelected = null;
+    private State state;
+    private List<Cardboard> take;
+    private Cardboard lastSelected;
 
     enum State {
         Take,
@@ -93,7 +90,21 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
         this.lastSelected = lastSelected;
     }
 
+    public boolean gameOver() {
+        return getGameState() == Game.State.Take && getTake().size() == 0 && getTable().countFaceDownCardboard() < 2;
+//        return getGameState() == State.RecycleOrReduce;
+    }
+
     public void setup() {
+        box = new Stack<Component>();
+
+        table = new Table();
+        hand = new Hand();
+
+        state = State.Take;
+        take = new ArrayList<Cardboard>();
+        lastSelected = null;
+
         int[] cleanCardboards = new int[] { 7, 6, 3, 2, 1, 1, 1 };
         int[] dirtyCardboards = new int[] { 3, 2, 1, 1, 1, 1 };
         for(int v = 1; v <= cleanCardboards.length; v++) {
@@ -139,6 +150,10 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
                 c = 0;
             }
         }
+
+//        Cardboard cb = Cardboard.createGreenCleanCardboard(1);
+//        cb.setFaceUp(false);
+//        table.set(0, 0, cb);
 
         updateHighlights();
     }
@@ -346,6 +361,10 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
         mouseClicked(e.getX(), e.getY()-20);
     }
     public void mouseClicked(int x, int y) {
+        if(x < 0 || y < 0) {
+            return;
+        }
+
         int r = y / CELL_SIZE;
         int c = x / CELL_SIZE;
 
@@ -442,7 +461,11 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
 
         Rectangle endTurnButton = new Rectangle(Game.COLUMNS*Game.CELL_SIZE - (2*Game.CELL_SIZE) + 10, Game.ROWS*Game.CELL_SIZE + 10, 2*Game.CELL_SIZE - 20, Game.CELL_SIZE - 20);
         if(endTurnButton.contains(x, y) && state != State.Take && state != State.Collect) {
-            endTurn();
+            if(gameOver()) {
+                setup();
+            } else {
+                endTurn();
+            }
         }
 
         if(!updateHighlights()) {

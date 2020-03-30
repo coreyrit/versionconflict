@@ -1,5 +1,6 @@
 package singlesort;
 
+import singlesort.component.Cardboard;
 import singlesort.component.Component;
 
 import java.util.Collection;
@@ -20,6 +21,18 @@ public class Table {
         for(Component comp : comps) {
             remove(comp);
         }
+    }
+
+    public int countFaceDownCardboard() {
+        int count = 0;
+        for(int r = 0; r < Game.ROWS; r++) {
+            for(int c = 0; c < Game.COLUMNS; c++) {
+                if(table[r][c] != null && table[r][c] instanceof Cardboard && !((Cardboard)table[r][c]).isFaceUp()) {
+                    count++;
+                }
+            }
+        }
+        return count;
     }
 
     public void remove(Component comp) {

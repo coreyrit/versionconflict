@@ -97,6 +97,10 @@ public class Cardboard extends Component {
         this.faceUp = true;
     }
 
+    public void setFaceUp(boolean faceUp) {
+        this.faceUp = faceUp;
+    }
+
     public boolean isFaceUp() {
         return faceUp;
     }

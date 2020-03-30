@@ -1,7 +1,5 @@
 package singlesort;
 
-import singlesort.component.Cardboard;
-
 import javax.swing.*;
 import java.awt.*;
 
@@ -114,13 +112,24 @@ public class PanelRenderer extends JPanel {
 
                 }
 
-                g.setColor(Color.red);
+                boolean newGame = game.gameOver();
+                if(newGame) {
+                    g.setColor(Color.green);
+                } else {
+                    g.setColor(Color.red);
+                }
                 g.fillRect(Game.COLUMNS*Game.CELL_SIZE - (2*Game.CELL_SIZE) + 10, Game.ROWS*Game.CELL_SIZE + 10, 2*Game.CELL_SIZE - 20, Game.CELL_SIZE - 20);
                 g.setColor(Color.black);
                 ((Graphics2D)g).setStroke(fatStroke);
                 g.drawRect(Game.COLUMNS*Game.CELL_SIZE - (2*Game.CELL_SIZE) + 10, Game.ROWS*Game.CELL_SIZE + 10, 2*Game.CELL_SIZE - 20, Game.CELL_SIZE - 20);
-                g.setColor(Color.white);
-                g.drawString("End Turn", Game.COLUMNS*Game.CELL_SIZE - (2*Game.CELL_SIZE) + 10+50, Game.ROWS*Game.CELL_SIZE + 10+50);
+
+                if(newGame) {
+                    g.setColor(Color.black);
+                    g.drawString("New Game", Game.COLUMNS * Game.CELL_SIZE - (2 * Game.CELL_SIZE) + 10 + 50, Game.ROWS * Game.CELL_SIZE + 10 + 50);
+                } else {
+                    g.setColor(Color.white);
+                    g.drawString("End Turn", Game.COLUMNS * Game.CELL_SIZE - (2 * Game.CELL_SIZE) + 10 + 50, Game.ROWS * Game.CELL_SIZE + 10 + 50);
+                }
             }
         } catch (Exception ex) {
             throw new RuntimeException(ex);
