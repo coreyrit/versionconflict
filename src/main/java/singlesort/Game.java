@@ -550,12 +550,14 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
                         score += plastic.getFace().getValue();
                         break;
                     case 3:
-                        if(cardboardColors.size() == 3) {
+//                        if(cardboardColors.size() == 3) {
+                        if(cardboardTotal >= 3) {
                             score += 3;
                         }
                         break;
                     case 5:
-                        if(cardboardTotal == 5) {
+//                        if(cardboardTotal == 5) {
+                        if(cardboardTotal >= 5) {
                             score += 5;
                         }
                         break;
