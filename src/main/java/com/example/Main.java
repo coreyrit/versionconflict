@@ -27,6 +27,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.view.RedirectView;
 import singlesort.Game;
 import singlesort.PanelRenderer;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -70,12 +71,13 @@ public class Main {
   }
 
   @RequestMapping(path = "/newgame", method = RequestMethod.GET)
-  public String newGame(@RequestParam(name = "players", defaultValue = "1") Integer players,
-                      @CookieValue("id") String id) {
+  public RedirectView newGame(@RequestParam(name = "players", defaultValue = "1") Integer players,
+                              @CookieValue("id") String id) {
     Game game = new Game(players);
     games.put(id, game);
     panelRenderers.put(game, new PanelRenderer(game));
-    return "game";
+
+    return new RedirectView("game");
   }
 
   @RequestMapping(path = "/gameimg", method = RequestMethod.GET)
