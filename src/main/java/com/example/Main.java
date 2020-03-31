@@ -24,6 +24,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import singlesort.Game;
@@ -62,8 +63,18 @@ public class Main {
     SpringApplication.run(Main.class, args);
   }
 
+
   @RequestMapping(path = "/game", method = RequestMethod.GET)
   String game() {
+    return "game";
+  }
+
+  @RequestMapping(path = "/newgame", method = RequestMethod.GET)
+  public String newGame(@RequestParam(name = "players", defaultValue = "1") Integer players,
+                      @CookieValue("id") String id) {
+    Game game = new Game(players);
+    games.put(id, game);
+    panelRenderers.put(game, new PanelRenderer(game));
     return "game";
   }
 
@@ -72,11 +83,15 @@ public class Main {
           @RequestParam(name = "x", defaultValue = "-10") Integer x,
           @RequestParam(name = "y", defaultValue = "-10") Integer y,
           @RequestParam(name = "id", defaultValue = "0") String id,
+          @CookieValue("id") String cookieId,
           HttpServletResponse response) throws IOException {
       String contentType = "application/octet-stream";
       response.setContentType(contentType);
       OutputStream out = response.getOutputStream();
 
+      if(id.equals("0")) {
+        id = cookieId;
+      }
 //      BufferedImage img = ImageIO.read(getClass().getResource("/public/lang-logo.png"));
 //    if(x > 0 && y > 0) {
 
@@ -84,7 +99,7 @@ public class Main {
     if(games.containsKey(id)) {
       game = games.get(id);
     } else {
-      game = new Game();
+      game = new Game(1);
       games.put(id, game);
       panelRenderers.put(game, new PanelRenderer(game));
     }

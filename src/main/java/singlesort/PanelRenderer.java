@@ -6,7 +6,7 @@ import java.awt.*;
 public class PanelRenderer extends JPanel {
 
     private Game game;
-    private static Font font1 = new Font("Arial", Font.PLAIN, 48);
+    private static Font font1 = new Font("Arial", Font.PLAIN, 24);
     private static Font font2 = new Font("Arial", Font.PLAIN, 18);
 
     public static Stroke normalStroke = new BasicStroke(1);
@@ -54,11 +54,12 @@ public class PanelRenderer extends JPanel {
 
                 g.setFont(font1);
                 g.setColor(Color.black);
-                g.drawString("Score: " + game.getScore(), 50, Game.windowHeight-55);
+                g.drawString("Player: " + (game.getTurn()+1) + "/" + game.getHands().size(), 50, Game.windowHeight-65);
+                g.drawString("Score: " + game.getScore(), 50, Game.windowHeight-45);
                 g.setFont(font2);
                 switch(game.getGameState()) {
                     case Take:
-                        g.drawString("Choose a component in the pile to Take (" + (game.getTake().size()+1) + " of 2).", 300, Game.windowHeight-55);
+                        g.drawString("Choose a component in the pile to Take (" + (game.getTake().size()+1) + " of 2).", 300, Game.windowHeight-65);
                         break;
                     case Rot:
                         String colorWord;
@@ -70,44 +71,44 @@ public class PanelRenderer extends JPanel {
                             colorWord = "green";
                         }
 
-                        g.drawString("Choose a dirty cardboard to Rot your clean " + colorWord + " " + game.getLastSelected().getFace().getValue() + ".", 300, Game.windowHeight-55);
-                        g.drawString("Or select a component in your collection to perform actions.", 300, Game.windowHeight-25);
+                        g.drawString("Choose a dirty cardboard to Rot your clean " + colorWord + " " + game.getLastSelected().getFace().getValue() + ".", 300, Game.windowHeight-65);
+                        g.drawString("Or select a component in your collection to perform actions.", 300, Game.windowHeight-35);
                         break;
                     case RecycleOrReduce:
                         if(game.getHand().getSelected().size() == 0) {
-                            g.drawString("Select a cardboard, plastic, or glass in your collection to perform actions.", 300, Game.windowHeight-55);
+                            g.drawString("Select a cardboard, plastic, or glass in your collection to perform actions.", 300, Game.windowHeight-65);
                         } else if(game.getHand().getSelected().size() == 1 && game.getTable().getSelected().size() == 0) {
-                            g.drawString("Choose a plastic in the pile to Reduce or cardboard to Recycle.", 300, Game.windowHeight-55);
-                            g.drawString("Or select more cardboard in your collection for Reduce.", 300, Game.windowHeight-25);
+                            g.drawString("Choose a plastic in the pile to Reduce or cardboard to Recycle.", 300, Game.windowHeight-65);
+                            g.drawString("Or select more cardboard in your collection for Reduce.", 300, Game.windowHeight-35);
                         }else if(game.getHand().getSelected().size() == 1 && game.getTable().getSelected().size() == 1) {
-                            g.drawString("Choose another cardboard in the pile to Recycle.", 300, Game.windowHeight-55);
+                            g.drawString("Choose another cardboard in the pile to Recycle.", 300, Game.windowHeight-65);
                         }
                         break;
                     case RepairOrRepurpose:
                         if(game.getHand().getSelected().size() == 0) {
-                            g.drawString("Select a plastic or glass in your collection to perform actions.", 300, Game.windowHeight-55);
+                            g.drawString("Select a plastic or glass in your collection to perform actions.", 300, Game.windowHeight-65);
                         } else if(game.getHand().getSelected().size() == 1) {
-                            g.drawString("Select the plastic again to Repair or select an additional plastic in your collection to Repurpose.", 300, Game.windowHeight-55);
+                            g.drawString("Select the plastic again to Repair or select an additional plastic in your collection to Repurpose.", 300, Game.windowHeight-65);
                         } else if(game.getHand().getSelected().size() == 2) {
-                            g.drawString("Choose a glass in the pile to Repurpose.", 300, Game.windowHeight-55);
+                            g.drawString("Choose a glass in the pile to Repurpose.", 300, Game.windowHeight-65);
                         }
                         break;
                     case ReuseOrReturn:
                         if(game.getHand().getSelected().size() == 0) {
-                            g.drawString("Select glass in your collection to perform actions.", 300, Game.windowHeight-55);
+                            g.drawString("Select glass in your collection to perform actions.", 300, Game.windowHeight-65);
                         } else if(game.getHand().getSelected().size() == 1) {
-                            g.drawString("Select a plastic 6 from the pile to Reuse or select more glass in your collection to Return.", 300, Game.windowHeight-55);
+                            g.drawString("Select a plastic 6 from the pile to Reuse or select more glass in your collection to Return.", 300, Game.windowHeight-65);
                         } else if(game.getHand().getSelected().size() == 2) {
-                            g.drawString("Select one more glass in your collection to Return.", 300, Game.windowHeight-55);
+                            g.drawString("Select one more glass in your collection to Return.", 300, Game.windowHeight-65);
                         } else if(game.getHand().getSelected().size() == 3) {
-                            g.drawString("Select a metal in the pile to Return.", 300, Game.windowHeight-55);
+                            g.drawString("Select a metal in the pile to Return.", 300, Game.windowHeight-65);
                         }
                         break;
                     case Collect:
-                        g.drawString("Select a cardboard to keep from the Take.", 300, Game.windowHeight-55);
+                        g.drawString("Select a cardboard to keep from the Take.", 300, Game.windowHeight-65);
                         break;
                     case CleanUp:
-                        g.drawString("You must select a component in your collection for Clean Up.", 300, Game.windowHeight-55);
+                        g.drawString("You must select a component in your collection for Clean Up.", 300, Game.windowHeight-65);
                         break;
 
                 }

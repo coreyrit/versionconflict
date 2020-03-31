@@ -61,7 +61,7 @@ public class Plastic extends Component {
         return new Plastic(game, Color.yellow, Color.black) ;
     }
 
-    private static Font font = new Font("Arial", Font.PLAIN, 100);
+    private static Font font = new Font("Arial", Font.PLAIN, 128);
     private static Stroke stroke = new BasicStroke(8);
 
     public void draw(Graphics g, int x, int y) {
