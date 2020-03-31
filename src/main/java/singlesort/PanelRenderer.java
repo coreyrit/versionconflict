@@ -109,10 +109,13 @@ public class PanelRenderer extends JPanel {
                             g.drawString("Select glass in your collection to perform actions.", 300, Game.windowHeight-65);
                         } else if(game.getHand().getSelected().size() == 1) {
                             g.drawString("Select a plastic 6 from the pile to Reuse or select more glass in your collection to Return.", 300, Game.windowHeight-65);
+                            if(game.getHands().size() >= 5) {
+                                g.drawString("Or select one more glass in your collection to Return.", 300, Game.windowHeight-35);
+                            }
+                        } else if(game.getHand().getSelected().size() == 3 || (game.getHands().size() >= 5 && game.getHand().getSelected().size() == 2)) {
+                            g.drawString("Select a metal in the pile to Return.", 300, Game.windowHeight-65);
                         } else if(game.getHand().getSelected().size() == 2) {
                             g.drawString("Select one more glass in your collection to Return.", 300, Game.windowHeight-65);
-                        } else if(game.getHand().getSelected().size() == 3) {
-                            g.drawString("Select a metal in the pile to Return.", 300, Game.windowHeight-65);
                         }
                         break;
                     case Collect:

@@ -2,6 +2,7 @@ package singlesort;
 
 import singlesort.component.*;
 import singlesort.component.Component;
+import versionconflict.Card;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -10,7 +11,7 @@ import java.util.List;
 
 public class Game { //extends JFrame implements MouseListener, MouseMotionListener {
     public static Random random = new Random();
-    public static String VERSION = "0.1.4";
+    public static String VERSION = "0.1.5";
 
     public static final int ROWS = 9;
     public static final int COLUMNS = 15;
@@ -29,6 +30,8 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
     private State state;
     private List<Cardboard> take;
     private Cardboard lastSelected;
+
+    private List<Cardboard> trashHeap;
 
     enum State {
         Take,
@@ -94,6 +97,10 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
         this.lastSelected = lastSelected;
     }
 
+    public List<Cardboard> getTrashHeap() {
+        return trashHeap;
+    }
+
     public boolean gameOver() {
         return getGameState() == Game.State.Take && getTake().size() == 0 &&
                 turn == 0 && getTable().countFaceDownCardboard() < hands.size();
@@ -105,6 +112,8 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
 
         table = new Table(this);
         hands = new ArrayList<>();
+
+        trashHeap = new ArrayList<>();
 
         turn = 0;
         for(int i = 0; i < players; i++) {
@@ -219,7 +228,11 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
                                 plastic.setHighlight(plastic.getColor().equals(getHand().getSelected().getColor()) && plastic.getFace().getValue() == 6);
                             }
                             else {
-                                comp.setHighlight(getHand().getSelected().size() == 3 && comp instanceof Metal);
+                                if(hands.size() >= 5) {
+                                    comp.setHighlight(getHand().getSelected().size() == 2 && comp instanceof Metal);
+                                } else {
+                                    comp.setHighlight(getHand().getSelected().size() == 3 && comp instanceof Metal);
+                                }
                             }
                             break;
                     }
@@ -538,8 +551,6 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
         int maxGlass = 0;
         int plastic6count = 0;
 
-        Map<Integer, Integer> mapSixes = new HashMap<>();
-
         for(Component component : getHand()) {
             if(component instanceof Cardboard) {
                 Cardboard cardboard = (Cardboard)component;
@@ -659,15 +670,20 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
         }
 
         // penalties
-        for(int r = 0; r < ROWS; r++) {
-            for (int c = 0; c < COLUMNS; c++) {
-                Component component = table.get(r, c);
-                if(component != null && component.getMaterial() == Component.Material.Cardboad) {
-                    Cardboard cb = (Cardboard)component;
-                    if(hands.size() == 1 && cb.isFaceUp() && !cb.getFace().isClean() && cb.getFace().getValue() == 3) {
-                        score -= 3;
-                    }
-                }
+//        for(int r = 0; r < ROWS; r++) {
+//            for (int c = 0; c < COLUMNS; c++) {
+//                Component component = table.get(r, c);
+//                if(component != null && component.getMaterial() == Component.Material.Cardboad) {
+//                    Cardboard cb = (Cardboard)component;
+//                    if(hands.size() == 1 && cb.isFaceUp() && !cb.getFace().isClean() && cb.getFace().getValue() == 3) {
+//                        score -= 3;
+//                    }
+//                }
+//            }
+//        }
+        for(Cardboard dirtyCardboard : trashHeap) {
+            if(hands.size() == 1 && dirtyCardboard.getFace().getValue() == 3) {
+                score += 3;
             }
         }
 
