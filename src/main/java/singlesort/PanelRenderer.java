@@ -66,7 +66,7 @@ public class PanelRenderer extends JPanel {
                 g.setFont(font2);
                 switch(game.getGameState()) {
                     case Take:
-                        String msg = "Choose a component in the pile to Take";
+                        String msg = "Choose a face down cardboard in the pile to Take";
                         if(game.getHands().size() == 1) {
                             msg +=  "(" + (game.getTake().size()+1) + " of 2).";
                         }
