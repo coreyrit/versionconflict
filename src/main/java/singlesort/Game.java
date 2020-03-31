@@ -11,7 +11,7 @@ import java.util.List;
 
 public class Game { //extends JFrame implements MouseListener, MouseMotionListener {
     public static Random random = new Random();
-    public static String VERSION = "0.1.5";
+    public static String VERSION = "0.1.6";
 
     public static final int ROWS = 9;
     public static final int COLUMNS = 15;
@@ -252,9 +252,25 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
                 case RepairOrRepurpose:
                     if(comp instanceof Plastic) {
                         Plastic plastic = (Plastic)comp;
-                        comp.setHighlight(getHand().getSelected().contains(plastic) ||
-                                getHand().getSelected().size() != 2 ||
-                                !getHand().getSelected().getColor().equals(plastic.getColor()));
+                        if(getHand().getSelected().contains(plastic)) {
+                            plastic.setHighlight(true);
+                        } else {
+                            switch (hands.size()) {
+                                case 1:
+                                case 2:
+                                    comp.setHighlight(getHand().getSelected().size() != 2 || !getHand().getSelected().getColor().equals(plastic.getColor()));
+                                    break;
+                                case 3:
+                                case 4:
+                                    comp.setHighlight(getHand().getSelected().size() <= 1);
+                                    break;
+                                case 5:
+                                case 6:
+                                    comp.setHighlight(getHand().getSelected().size() < 2 || getHand().getSelected().getColor().equals(Color.black));
+                                    break;
+
+                            }
+                        }
                     } else {
                         comp.setHighlight(comp instanceof Glass);
                     }
@@ -323,7 +339,7 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
                return true;
            }
            // plastic is special.. double click will roll
-           else if (state == State.RepairOrRepurpose &&
+           /*else if (state == State.RepairOrRepurpose &&
                    component instanceof Plastic &&
                    getHand().getSelected().size() == 1 &&
                    getHand().getSelected().contains(component)) {
@@ -332,7 +348,8 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
                table.getSelected().clear();
                state = State.ReuseOrReturn;
                return true;
-           } else {
+           } */
+            else {
                getHand().getSelected().updateSelection(component);
                if (getHand().getSelected().isEmpty()) {
                    table.getSelected().clear();
@@ -499,6 +516,20 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
         Rectangle endTurnButton = new Rectangle(Game.COLUMNS*Game.CELL_SIZE - (2*Game.CELL_SIZE) + 10, Game.ROWS*Game.CELL_SIZE + 10, 2*Game.CELL_SIZE - 20, Game.CELL_SIZE - 20);
         if(gameOver() && endTurnButton.contains(x, y)) {
             setup(hands.size());
+        } else if(endTurnButton.contains(x, y) && state == State.RepairOrRepurpose) {
+            if(getHand().getSelected().size() == 0) {
+                endTurn();
+            } else if(getHand().getSelected().size() == 2 && !getHand().getSelected().getColor().equals(Color.black)) {
+                endTurn();
+            } else {
+                for(Component comp : getHand().getSelected()) {
+                    Plastic plastic = (Plastic)comp;
+                    plastic.roll();
+                }
+                getHand().getSelected().clear();
+                table.getSelected().clear();
+                state = State.ReuseOrReturn;
+            }
         } else if(endTurnButton.contains(x, y) && state != State.Take && state != State.Collect) {
             endTurn();
         }

@@ -99,9 +99,23 @@ public class PanelRenderer extends JPanel {
                         if(game.getHand().getSelected().size() == 0) {
                             g.drawString("Select a plastic or glass in your collection to perform actions.", 300, Game.windowHeight-65);
                         } else if(game.getHand().getSelected().size() == 1) {
-                            g.drawString("Select the plastic again to Repair or select an additional plastic in your collection to Repurpose.", 300, Game.windowHeight-65);
-                        } else if(game.getHand().getSelected().size() == 2) {
+                            String repairMsg = "Click the button below to Repair";
+                            if(game.getHands().size() > 2) {
+                                repairMsg += " or select another plastic to also Repair.";
+                            }
+                            g.drawString(repairMsg, 300, Game.windowHeight-65);
+                            g.drawString("Or select an additional plastic in your collection to Repurpose.", 300, Game.windowHeight-35);
+                        } else if(game.getHand().getSelected().size() == 2 && !game.getHand().getSelected().getColor().equals(Color.black)) {
                             g.drawString("Choose a glass in the pile to Repurpose.", 300, Game.windowHeight-65);
+                        } else if(game.getHand().getSelected().size() == 2 && game.getHand().getSelected().getColor().equals(Color.black)) {
+                            String repairMsg = "Click the button below to Repair";
+                            if (game.getHands().size() > 4) {
+                                repairMsg += " or select another plastic to also Repair.";
+                            }
+                            g.drawString(repairMsg, 300, Game.windowHeight-65);
+                        } else if(game.getHand().getSelected().size() == 3) {
+                            String repairMsg = "Click the button below to Repair";
+                            g.drawString(repairMsg, 300, Game.windowHeight-65);
                         }
                         break;
                     case ReuseOrReturn:
@@ -128,8 +142,13 @@ public class PanelRenderer extends JPanel {
                 }
 
                 boolean newGame = game.gameOver();
+                boolean repair = game.getGameState() == Game.State.RepairOrRepurpose &&
+                        (game.getHand().getSelected().size() == 1 || (game.getHand().getSelected().size() > 1 && game.getHand().getSelected().getColor().equals(Color.black)));
+
                 if(newGame) {
                     g.setColor(Color.green);
+                } else if(repair) {
+                    g.setColor(Color.gray);
                 } else {
                     g.setColor(Color.red);
                 }
@@ -141,6 +160,9 @@ public class PanelRenderer extends JPanel {
                 if(newGame) {
                     g.setColor(Color.black);
                     g.drawString("New Game", Game.COLUMNS * Game.CELL_SIZE - (2 * Game.CELL_SIZE) + 10 + 50, Game.ROWS * Game.CELL_SIZE + 10 + 50);
+                } else if (repair) {
+                    g.setColor(Color.black);
+                    g.drawString("Repair", Game.COLUMNS * Game.CELL_SIZE - (2 * Game.CELL_SIZE) + 10 + 50, Game.ROWS * Game.CELL_SIZE + 10 + 50);
                 } else {
                     g.setColor(Color.white);
                     g.drawString("End Turn", Game.COLUMNS * Game.CELL_SIZE - (2 * Game.CELL_SIZE) + 10 + 50, Game.ROWS * Game.CELL_SIZE + 10 + 50);
