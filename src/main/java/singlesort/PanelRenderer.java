@@ -2,10 +2,12 @@ package singlesort;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Properties;
 
 public class PanelRenderer extends JPanel {
 
     private Game game;
+    private static Font font0 = new Font("Arial", Font.PLAIN, 14);
     private static Font font1 = new Font("Arial", Font.PLAIN, 24);
     private static Font font2 = new Font("Arial", Font.PLAIN, 18);
 
@@ -52,14 +54,23 @@ public class PanelRenderer extends JPanel {
                     game.getHand().get(i).draw(g, x, y);
                 }
 
-                g.setFont(font1);
+
                 g.setColor(Color.black);
+                g.setFont(font0);
+                final Properties properties = new Properties();
+                properties.load(getClass().getClassLoader().getResourceAsStream("application.properties"));
+                g.drawString("Version: " + Game.VERSION, 50, Game.windowHeight-90);
+                g.setFont(font1);
                 g.drawString("Player: " + (game.getTurn()+1) + "/" + game.getHands().size(), 50, Game.windowHeight-65);
                 g.drawString("Score: " + game.getScore(), 50, Game.windowHeight-45);
                 g.setFont(font2);
                 switch(game.getGameState()) {
                     case Take:
-                        g.drawString("Choose a component in the pile to Take (" + (game.getTake().size()+1) + " of 2).", 300, Game.windowHeight-65);
+                        String msg = "Choose a component in the pile to Take";
+                        if(game.getHands().size() == 1) {
+                            msg +=  "(" + (game.getTake().size()+1) + " of 2).";
+                        }
+                        g.drawString(msg, 300, Game.windowHeight-65);
                         break;
                     case Rot:
                         String colorWord;
