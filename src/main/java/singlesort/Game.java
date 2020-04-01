@@ -11,7 +11,7 @@ import java.util.List;
 
 public class Game { //extends JFrame implements MouseListener, MouseMotionListener {
     public static Random random = new Random();
-    public static String VERSION = "0.1.7";
+    public static String VERSION = "0.1.8";
 
     public static final int ROWS = 9;
     public static final int COLUMNS = 15;
@@ -29,7 +29,8 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
 
     private State state;
     private List<Cardboard> take;
-    private Cardboard lastSelected;
+//    private Component lastSelected;
+    private Component rotSelection;
 
     private List<Cardboard> trashHeap;
 
@@ -37,6 +38,7 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
         Take,
         Collect,
         Rot,
+        RotSwap,
         RecycleOrReduce,
         RepairOrRepurpose,
         ReuseOrReturn,
@@ -89,13 +91,13 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
         return take;
     }
 
-    public Cardboard getLastSelected() {
-        return lastSelected;
-    }
+//    public Cardboard getLastSelected() {
+//        return lastSelected;
+//    }
 
-    public void setLastSelected(Cardboard lastSelected) {
-        this.lastSelected = lastSelected;
-    }
+//    public void setLastSelected(Cardboard lastSelected) {
+//        this.lastSelected = lastSelected;
+//    }
 
     public List<Cardboard> getTrashHeap() {
         return trashHeap;
@@ -123,7 +125,8 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
 
         state = State.Take;
         take = new ArrayList<Cardboard>();
-        lastSelected = null;
+//        lastSelected = null;
+        rotSelection = null;
 
         int[] cleanCardboards = new int[] { 7, 6, 3, 2, 1, 1, 1 };
         int[] dirtyCardboards = new int[] { 3, 2, 1, 1, 1, 1 };
@@ -194,8 +197,14 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
                         case Rot:
                             if(comp instanceof Cardboard) {
                                 Cardboard cb = (Cardboard) comp;
-                                cb.setHighlight(!cb.getFace().isClean() && cb.getFace().getValue() == lastSelected.getFace().getValue() && cb.isFaceUp());
+//                                cb.setHighlight(!cb.getFace().isClean() && cb.getFace().getValue() == lastSelected.getFace().getValue() && cb.isFaceUp());
+                                cb.setHighlight(cb.isFaceUp());
+                            } else {
+                                comp.setHighlight(comp instanceof Plastic || comp instanceof Glass);
                             }
+                            break;
+                        case RotSwap:
+                            comp.setHighlight(comp == rotSelection);
                             break;
                         case RecycleOrReduce:
                             if(table.getSelected().contains(comp)) {
@@ -204,8 +213,10 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
                                 Cardboard cb = (Cardboard) comp;
                                 if(cb.isFaceUp() && cb.getColor().equals(getHand().getSelected().getColor())) {
                                     if(table.getSelected().size() == 0) {
-                                        cb.setHighlight( getHand().getSelected().getCardboardTotal() > cb.getFace().getValue());
+                                        cb.setHighlight( getHand().getSelected().getCardboardTotal() >= cb.getFace().getValue());
                                     } else if(table.getSelected().size() == 1) {
+                                        cb.setHighlight( getHand().getSelected().getCardboardTotal() >= cb.getFace().getValue() + table.getSelected().getCardboardTotal());
+                                    } else if(table.getSelected().size() == 2) {
                                         cb.setHighlight( getHand().getSelected().getCardboardTotal() == cb.getFace().getValue() + table.getSelected().getCardboardTotal());
                                     }
                                 }
@@ -249,6 +260,25 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
                 case Rot:
                 case RecycleOrReduce:
                     comp.setHighlight(!(comp instanceof Metal));
+                    break;
+                case RotSwap:
+                    if(rotSelection.getMaterial().equals(comp.getMaterial())) {
+                        switch (rotSelection.getMaterial()) {
+                            case Cardboad:
+                                Cardboard rotCb = (Cardboard) rotSelection;
+                                Cardboard handCb = (Cardboard) comp;
+                                comp.setHighlight(!rotCb.getColor().equals(handCb.getColor()) && rotCb.getFace().getValue() == handCb.getFace().getValue());
+                                break;
+                            case Plastic:
+                                Plastic rotPlastic = (Plastic) rotSelection;
+                                Plastic handPlastic = (Plastic) comp;
+                                comp.setHighlight(!rotPlastic.getColor().equals(handPlastic.getColor()) && rotPlastic.getFace().getValue() == handPlastic.getFace().getValue());
+                                break;
+                            case Glass:
+                                comp.setHighlight(!rotSelection.getColor().equals(comp.getColor()));
+                                break;
+                        }
+                    }
                     break;
                 case RepairOrRepurpose:
                     if(comp instanceof Plastic) {
@@ -331,7 +361,7 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
     }
 
     private boolean handSelect(Component component) {
-       if(state != State.Collect && getHand().contains(component)) {
+       if(state != State.Collect && state != State.RotSwap && getHand().contains(component)) {
            if(state == State.CleanUp) {
                getHand().remove(component);
                if(getHand().sizeMinusPlastic4s() <= 10) {
@@ -438,20 +468,20 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
                         take.add(takeCB);
                         if(hands.size() > 1) {
                             take.clear();
-                            Cardboard collectCB = (Cardboard) component;
-                            lastSelected = collectCB;
-                            if (collectCB.getFace().isClean() && lookForDirtyCardboard(collectCB.getFace().getValue())) {
+//                            Cardboard collectCB = (Cardboard) component;
+//                            lastSelected = collectCB;
+//                            if (collectCB.getFace().isClean() && lookForDirtyCardboard(collectCB.getFace().getValue())) {
                                 state = State.Rot;
-                            } else {
-                                state = State.RecycleOrReduce;
-                            }
+//                            } else {
+//                                state = State.RecycleOrReduce;
+//                            }
                         } else if(hands.size() == 1 && take.size() == 2) {
                             state = State.Collect;
                         }
                         break;
                     case Collect:
                         Cardboard collectCB = (Cardboard) component;
-                        lastSelected = collectCB;
+//                        lastSelected = collectCB;
                         for(Cardboard cardboard : take) {
                             if(cardboard != collectCB) {
                                 putInPile(cardboard);
@@ -459,22 +489,40 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
                             }
                         }
                         take.clear();
-                        if (collectCB.getFace().isClean() && lookForDirtyCardboard(collectCB.getFace().getValue())) {
+//                        if (collectCB.getFace().isClean() && lookForDirtyCardboard(collectCB.getFace().getValue())) {
                             state = State.Rot;
-                        } else {
-                            state = State.RecycleOrReduce;
-                        }
+//                        } else {
+//                            state = State.RecycleOrReduce;
+//                        }
                         break;
                     case Rot:
                         if (!getHand().contains(component)) {
-                            getHand().remove(lastSelected);
-                            putInPile(lastSelected);
-                            lastSelected = (Cardboard) component;
-                            table.remove(component);
-                            getHand().add(component);
+                            rotSelection = component;
+                            table.getSelected().updateSelection(rotSelection);
+//                            getHand().remove(lastSelected);
+//                            putInPile(lastSelected);
+//                            lastSelected = (Cardboard) component;
+//                            table.remove(component);
+//                            getHand().add(component);
+//                            getHand().getSelected().clear();
+//                            state = State.EndTurn;
+                            state = State.RotSwap;
+                        }
+                        break;
+                    case RotSwap:
+                        if(getHand().contains(component)) {
+                            getHand().remove(component);
+                            putInPile(component);
+                            getHand().add(rotSelection);
+                            table.remove(rotSelection);
+                            rotSelection = null;
+                            table.getSelected().clear();
                             getHand().getSelected().clear();
                             state = State.EndTurn;
-//                            endTurn();
+                        } else if(!getHand().contains(component)) {
+                            table.getSelected().updateSelection(component);
+                            rotSelection = null;
+                            state = State.Rot;
                         }
                         break;
                     case RecycleOrReduce:
@@ -482,7 +530,8 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
                             Cardboard cb = (Cardboard) component;
                             table.getSelected().updateSelection(cb);
 
-                            if (table.getSelected().size() == 2) {
+                            //if (table.getSelected().size() == 2) {
+                            if(table.getSelected().getCardboardTotal() == getHand().getSelected().getCardboardTotal()) {
                                 swapSelections();
                                 state = State.RepairOrRepurpose;
                             }

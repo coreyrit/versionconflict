@@ -94,55 +94,71 @@ public class PanelRenderer extends JPanel {
                     g.setFont(font2);
                     switch (game.getGameState()) {
                         case Take:
-                            String msg = "Choose a face down cardboard in the pile to Take";
+                            String msg = "Choose a face down cardboard in the pile to Collect";
                             if (game.getHands().size() == 1) {
                                 msg += "(" + (game.getTake().size() + 1) + " of 2).";
                             }
                             g.drawString(msg, 300, Game.windowHeight - 65);
                             break;
                         case Rot:
-                            String colorWord;
-                            if (game.getLastSelected().getColor().equals(Color.blue)) {
-                                colorWord = "blue";
-                            } else if (game.getLastSelected().getColor().equals(Color.yellow)) {
-                                colorWord = "yellow";
-                            } else {
-                                colorWord = "green";
-                            }
+//                            String colorWord;
+//                            if (game.getLastSelected().getColor().equals(Color.blue)) {
+//                                colorWord = "blue";
+//                            } else if (game.getLastSelected().getColor().equals(Color.yellow)) {
+//                                colorWord = "yellow";
+//                            } else {
+//                                colorWord = "green";
+//                            }
 
-                            g.drawString("Choose a dirty cardboard to Rot your clean " + colorWord + " " + game.getLastSelected().getFace().getValue() + ".", 300, Game.windowHeight - 65);
+//                            g.drawString("Choose a dirty cardboard to Rot your clean " + colorWord + " " + game.getLastSelected().getFace().getValue() + ".", 300, Game.windowHeight - 65);
+                            g.drawString("Choose a component in the pile for Recycle.", 300, Game.windowHeight - 65);
                             g.drawString("Or select a component in your collection to perform actions.", 300, Game.windowHeight - 35);
                             break;
+                        case RotSwap:
+                            g.drawString("Choose a component in your collection to Recycle.", 300, Game.windowHeight - 65);
+                            break;
                         case RecycleOrReduce:
-                            if (game.getHand().getSelected().size() == 0) {
-                                g.drawString("Select a cardboard, plastic, or glass in your collection to perform actions.", 300, Game.windowHeight - 65);
-                            } else if (game.getHand().getSelected().size() == 1 && game.getTable().getSelected().size() == 0) {
-                                g.drawString("Choose a plastic in the pile to Reduce or cardboard to Recycle.", 300, Game.windowHeight - 65);
-                                g.drawString("Or select more cardboard in your collection for Reduce.", 300, Game.windowHeight - 35);
-                            } else if (game.getHand().getSelected().size() == 1 && game.getTable().getSelected().size() == 1) {
-                                g.drawString("Choose another cardboard in the pile to Recycle.", 300, Game.windowHeight - 65);
+                            switch(game.getHand().getSelected().size()) {
+                                case 0:
+                                    g.drawString("Select a cardboard, plastic, or glass in your collection to perform actions.", 300, Game.windowHeight - 65);
+                                    break;
+                                case 1:
+                                    switch(game.getTable().getSelected().size()) {
+                                        case 0:
+                                            g.drawString("Choose a plastic in the pile to Reduce or more cardboard to Repair.", 300, Game.windowHeight - 65);
+                                            g.drawString("Or select more cardboard in your collection for Reduce.", 300, Game.windowHeight - 35);
+                                            break;
+                                        default:
+                                            g.drawString("Choose more cardboard to Repair.", 300, Game.windowHeight - 65);
+                                            break;
+                                    }
+                                    break;
+                                default:
+                                    g.drawString("Choose a plastic in the pile to Reduce.", 300, Game.windowHeight - 65);
+                                    g.drawString("Or select more cardboard in your collection for Reduce.", 300, Game.windowHeight - 35);
+                                    break;
                             }
                             break;
                         case RepairOrRepurpose:
                             if (game.getHand().getSelected().size() == 0) {
                                 g.drawString("Select a plastic or glass in your collection to perform actions.", 300, Game.windowHeight - 65);
                             } else if (game.getHand().getSelected().size() == 1) {
-                                String repairMsg = "Click the button below to Repair";
+                                String repairMsg = "Click the button below to Rethink";
                                 if (game.getHands().size() > 2) {
-                                    repairMsg += " or select another plastic to also Repair.";
+                                    repairMsg += " or select another plastic to also Rethink.";
                                 }
                                 g.drawString(repairMsg, 300, Game.windowHeight - 65);
                                 g.drawString("Or select an additional plastic in your collection to Repurpose.", 300, Game.windowHeight - 35);
                             } else if (game.getHand().getSelected().size() == 2 && !game.getHand().getSelected().getColor().equals(Color.black)) {
                                 g.drawString("Choose a glass in the pile to Repurpose.", 300, Game.windowHeight - 65);
                             } else if (game.getHand().getSelected().size() == 2 && game.getHand().getSelected().getColor().equals(Color.black)) {
-                                String repairMsg = "Click the button below to Repair";
+                                String repairMsg = "Click the button below to Rethink";
                                 if (game.getHands().size() > 4) {
-                                    repairMsg += " or select another plastic to also Repair.";
+                                    repairMsg += " or select another plastic to also Rethink.";
                                 }
                                 g.drawString(repairMsg, 300, Game.windowHeight - 65);
                             } else if (game.getHand().getSelected().size() == 3) {
-                                String repairMsg = "Click the button below to Repair";
+                                String repairMsg = "Click the button below to Rethink";
                                 g.drawString(repairMsg, 300, Game.windowHeight - 65);
                             }
                             break;
@@ -161,7 +177,7 @@ public class PanelRenderer extends JPanel {
                             }
                             break;
                         case Collect:
-                            g.drawString("Select a cardboard to keep from the Take.", 300, Game.windowHeight - 65);
+                            g.drawString("Select a cardboard to keep.", 300, Game.windowHeight - 65);
                             break;
                         case CleanUp:
                             g.drawString("You must select a component in your collection for Clean Up.", 300, Game.windowHeight - 65);
@@ -189,7 +205,7 @@ public class PanelRenderer extends JPanel {
                         g.drawString("New Game", Game.COLUMNS * Game.CELL_SIZE - (2 * Game.CELL_SIZE) + 10 + 50, Game.ROWS * Game.CELL_SIZE + 10 + 50);
                     } else if (repair) {
                         g.setColor(Color.black);
-                        g.drawString("Repair", Game.COLUMNS * Game.CELL_SIZE - (2 * Game.CELL_SIZE) + 10 + 50, Game.ROWS * Game.CELL_SIZE + 10 + 50);
+                        g.drawString("Rethink", Game.COLUMNS * Game.CELL_SIZE - (2 * Game.CELL_SIZE) + 10 + 50, Game.ROWS * Game.CELL_SIZE + 10 + 50);
                     } else {
                         g.setColor(Color.white);
                         g.drawString("End Turn", Game.COLUMNS * Game.CELL_SIZE - (2 * Game.CELL_SIZE) + 10 + 50, Game.ROWS * Game.CELL_SIZE + 10 + 50);
