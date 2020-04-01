@@ -11,7 +11,7 @@ import java.util.List;
 
 public class Game { //extends JFrame implements MouseListener, MouseMotionListener {
     public static Random random = new Random();
-    public static String VERSION = "0.1.6";
+    public static String VERSION = "0.1.7";
 
     public static final int ROWS = 9;
     public static final int COLUMNS = 15;
@@ -102,6 +102,7 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
     }
 
     public boolean gameOver() {
+//        return getHand().size() > 2;
         return getGameState() == Game.State.Take && getTake().size() == 0 &&
                 turn == 0 && getTable().countFaceDownCardboard() < hands.size();
 //        return getGameState() == State.RecycleOrReduce;
@@ -228,7 +229,7 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
                                 plastic.setHighlight(plastic.getColor().equals(getHand().getSelected().getColor()) && plastic.getFace().getValue() == 6);
                             }
                             else {
-                                if(hands.size() >= 5) {
+                                if(hands.size() >= 4) {
                                     comp.setHighlight(getHand().getSelected().size() == 2 && comp instanceof Metal);
                                 } else {
                                     comp.setHighlight(getHand().getSelected().size() == 3 && comp instanceof Metal);
@@ -573,6 +574,10 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
     }
 
     public int getScore() {
+        return getScore(turn);
+    }
+
+    public int getScore(int player) {
         int score = 0;
         Map<Integer, Integer> mapCardboard = new HashMap<Integer, Integer>();
         Set<Color> cardboardColors = new HashSet<Color>();
@@ -582,7 +587,7 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
         int maxGlass = 0;
         int plastic6count = 0;
 
-        for(Component component : getHand()) {
+        for(Component component : hands.get(player)) {
             if(component instanceof Cardboard) {
                 Cardboard cardboard = (Cardboard)component;
                 cardboardColors.add(cardboard.getColor());
@@ -641,7 +646,7 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
         Collections.reverse(sixCounts);
 
 
-        for(Component component : getHand()) {
+        for(Component component : hands.get(player)) {
             if (component instanceof Plastic) {
                 Plastic plastic = (Plastic)component;
                 switch(plastic.getFace().getValue()) {
@@ -695,8 +700,10 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
         } else {
             if(sixCounts.size() > 0 && plastic6count == sixCounts.get(0)) {
                 score += (14-hands.size());
+//                score += 12;
             } else if (sixCounts.size() > 1 && plastic6count == sixCounts.get(1)) {
-                score += 6;
+                score += (8-hands.size());
+//                score += 6;
             }
         }
 
