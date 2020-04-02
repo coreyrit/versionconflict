@@ -11,7 +11,7 @@ import java.util.List;
 
 public class Game { //extends JFrame implements MouseListener, MouseMotionListener {
     public static Random random = new Random();
-    public static String VERSION = "0.1.8";
+    public static String VERSION = "0.1.9";
 
     public static final int ROWS = 9;
     public static final int COLUMNS = 15;
@@ -197,10 +197,14 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
                         case Rot:
                             if(comp instanceof Cardboard) {
                                 Cardboard cb = (Cardboard) comp;
-//                                cb.setHighlight(!cb.getFace().isClean() && cb.getFace().getValue() == lastSelected.getFace().getValue() && cb.isFaceUp());
-                                cb.setHighlight(cb.isFaceUp());
-                            } else {
-                                comp.setHighlight(comp instanceof Plastic || comp instanceof Glass);
+//                                cb.setHighlight(cb.isFaceUp());
+                                cb.setHighlight(cb.isFaceUp() && getHand().hasCardboardNotColor(cb.getFace().getValue(), cb.getColor()));
+                            } else if(comp instanceof Plastic) {
+                                Plastic plastic = (Plastic) comp;
+                                plastic.setHighlight(getHand().hasPlasticNotColor(plastic.getFace().getValue(), plastic.getColor()));
+                            } else if(comp instanceof Glass){
+//                                comp.setHighlight(comp instanceof Plastic || comp instanceof Glass);
+                                comp.setHighlight(getHand().hasGlassNotColor(comp.getColor()));
                             }
                             break;
                         case RotSwap:
@@ -622,6 +626,24 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
         return turn;
     }
 
+    public List<Integer> getRankedSixes() {
+        List<Integer> sixCounts = new ArrayList<>();
+        for(int i = 0; i < hands.size(); i++) {
+            int count = 0;
+            for(Component component : hands.get(i)) {
+                if(component instanceof Plastic && ((Plastic)component).getFace().getValue() == 6) {
+                    count++;
+                }
+            }
+            if(count > 0 && !sixCounts.contains(count)) {
+                sixCounts.add(count);
+            }
+        }
+        Collections.sort(sixCounts);
+        Collections.reverse(sixCounts);
+        return sixCounts;
+    }
+
     public int getScore() {
         return getScore(turn);
     }
@@ -679,22 +701,6 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
             }
         }
 
-        List<Integer> sixCounts = new ArrayList<>();
-        for(int i = 0; i < hands.size(); i++) {
-            int count = 0;
-            for(Component component : hands.get(i)) {
-                if(component instanceof Plastic && ((Plastic)component).getFace().getValue() == 6) {
-                    count++;
-                }
-            }
-            if(count > 0 && !sixCounts.contains(count)) {
-                sixCounts.add(count);
-            }
-        }
-        Collections.sort(sixCounts);
-        Collections.reverse(sixCounts);
-
-
         for(Component component : hands.get(player)) {
             if (component instanceof Plastic) {
                 Plastic plastic = (Plastic)component;
@@ -737,6 +743,8 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
                 }
             }
         }
+
+        List<Integer> sixCounts = getRankedSixes();
 
         if(hands.size() == 1) {
             if (plastic6count == 1) {

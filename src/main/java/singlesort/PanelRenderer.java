@@ -34,6 +34,7 @@ public class PanelRenderer extends JPanel {
         try {
             if (game != null) {
                 boolean newGame = game.gameOver();
+                java.util.List<Integer> sixCount = game.getRankedSixes();
 
                 if (newGame) {
                     // write out all the players components and their score
@@ -209,6 +210,19 @@ public class PanelRenderer extends JPanel {
                     } else {
                         g.setColor(Color.white);
                         g.drawString("End Turn", Game.COLUMNS * Game.CELL_SIZE - (2 * Game.CELL_SIZE) + 10 + 50, Game.ROWS * Game.CELL_SIZE + 10 + 50);
+                    }
+
+                    g.setFont(font2);
+                    g.setColor(Color.black);
+                    if(sixCount.size() > 0) {
+                        g.drawString("1st sixes: " + sixCount.get(0), Game.COLUMNS * Game.CELL_SIZE - (2 * Game.CELL_SIZE) -150, Game.ROWS * Game.CELL_SIZE + 10 + 50);
+                    } else {
+                        g.drawString("1st sixes: 0", Game.COLUMNS * Game.CELL_SIZE - (2 * Game.CELL_SIZE) -150, Game.ROWS * Game.CELL_SIZE + 10 + 50);
+                    }
+                    if(sixCount.size() > 1) {
+                        g.drawString("2nd sixes: " + sixCount.get(1), Game.COLUMNS * Game.CELL_SIZE - (2 * Game.CELL_SIZE) -150, Game.ROWS * Game.CELL_SIZE + 10 + 75);
+                    } else {
+                        g.drawString("2nd sixes: 0", Game.COLUMNS * Game.CELL_SIZE - (2 * Game.CELL_SIZE) -150, Game.ROWS * Game.CELL_SIZE + 10 + 75);
                     }
                 }
             }
