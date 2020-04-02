@@ -1,9 +1,7 @@
 package singlesort;
 
-import singlesort.component.Cardboard;
+import singlesort.component.*;
 import singlesort.component.Component;
-import singlesort.component.Glass;
-import singlesort.component.Plastic;
 import versionconflict.Card;
 
 import java.awt.*;
@@ -12,10 +10,12 @@ import java.util.ArrayList;
 public class Hand extends ArrayList<Component> {
     private Selection selected;
     private Game game;
+    private Goal goal;
 
-    public Hand(Game game) {
+    public Hand(Game game, Goal goal) {
         this.selected = new Selection(game);
         this.game = game;
+        this.goal = goal;
     }
 
     public boolean hasCardboardNotColor(int value, Color color) {
@@ -53,6 +53,10 @@ public class Hand extends ArrayList<Component> {
 
     public Selection getSelected() {
         return selected;
+    }
+
+    public Goal getGoal() {
+        return goal;
     }
 
     public void removeTrash() {

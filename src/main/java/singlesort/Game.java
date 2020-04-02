@@ -11,7 +11,7 @@ import java.util.List;
 
 public class Game { //extends JFrame implements MouseListener, MouseMotionListener {
     public static Random random = new Random();
-    public static String VERSION = "0.1.9";
+    public static String VERSION = "0.1.10";
 
     public static final int ROWS = 9;
     public static final int COLUMNS = 15;
@@ -118,9 +118,27 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
 
         trashHeap = new ArrayList<>();
 
+        Stack<Goal> goals = new Stack<Goal>();
+        if(players == 1) {
+            goals.add(new Goal(
+                    Cardboard.createYellowDirtyCardboard(this, 3),
+                    Cardboard.createBlueDirtyCardboard(this, 3),
+                    Cardboard.createGreenDirtyCardboard(this, 3)
+            ));
+        } else {
+            goals.add(new Goal(Cardboard.createYellowDirtyCardboard(this, 1), Cardboard.createYellowDirtyCardboard(this, 2)));
+            goals.add(new Goal(Cardboard.createYellowDirtyCardboard(this, 4), Cardboard.createYellowDirtyCardboard(this, 5)));
+            goals.add(new Goal(Cardboard.createBlueDirtyCardboard(this, 1), Cardboard.createBlueDirtyCardboard(this, 2)));
+            goals.add(new Goal(Cardboard.createBlueDirtyCardboard(this, 4), Cardboard.createBlueDirtyCardboard(this, 5)));
+            goals.add(new Goal(Cardboard.createGreenDirtyCardboard(this, 1), Cardboard.createGreenDirtyCardboard(this, 2)));
+            goals.add(new Goal(Cardboard.createGreenDirtyCardboard(this, 4), Cardboard.createGreenDirtyCardboard(this, 5)));
+        }
+
+        Collections.shuffle(goals);
+
         turn = 0;
         for(int i = 0; i < players; i++) {
-            hands.add(new Hand(this));
+            hands.add(new Hand(this, goals.pop()));
         }
 
         state = State.Take;

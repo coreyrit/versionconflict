@@ -1,5 +1,7 @@
 package singlesort;
 
+import singlesort.component.Cardboard;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.Properties;
@@ -10,6 +12,7 @@ public class PanelRenderer extends JPanel {
     private static Font font0 = new Font("Arial", Font.PLAIN, 14);
     private static Font font1 = new Font("Arial", Font.PLAIN, 24);
     private static Font font2 = new Font("Arial", Font.PLAIN, 18);
+    private static Font font3 = new Font("Arial", Font.PLAIN, 36);
 
     public static Stroke normalStroke = new BasicStroke(1);
     public static Stroke fatStroke = new BasicStroke(4);
@@ -92,6 +95,21 @@ public class PanelRenderer extends JPanel {
                     g.setFont(font1);
                     g.drawString("Player: " + (game.getTurn() + 1) + "/" + game.getHands().size(), 50, Game.windowHeight - 65);
                     g.drawString("Score: " + game.getScore(), 50, Game.windowHeight - 45);
+
+
+                    g.drawString("Goal: ", 50, Game.windowHeight - 25);
+                    g.setFont(font3);
+                    int x = 75;
+                    for(Cardboard target : game.getHand().getGoal().getTargets()) {
+                        x += 40;
+                        g.setColor(Color.black);
+                        g.fillOval(x-2, Game.windowHeight - 44, 32, 32);
+                        g.setColor(target.getColor());
+                        g.drawString(target.getFace().getText(), x, Game.windowHeight - 15);
+
+                    }
+
+                    g.setColor(Color.black);
                     g.setFont(font2);
                     switch (game.getGameState()) {
                         case Take:
