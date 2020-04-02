@@ -11,7 +11,7 @@ import java.util.List;
 
 public class Game { //extends JFrame implements MouseListener, MouseMotionListener {
     public static Random random = new Random();
-    public static String VERSION = "0.2.3";
+    public static String VERSION = "0.2.4";
 
     public static final int ROWS = 9;
     public static final int COLUMNS = 15;

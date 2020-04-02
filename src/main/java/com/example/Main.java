@@ -111,7 +111,12 @@ public class Main {
       games.put(id, game);
       panelRenderers.put(game, new PanelRenderer(game));
     }
+
+    if(timer != null && !timer.equals("")) {
       game.setTime(Integer.parseInt(timer));
+    } else {
+      game.setTime(0);
+    }
       game.mouseClicked(x, y);
 //    }
 
