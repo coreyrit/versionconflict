@@ -4,7 +4,10 @@ import singlesort.component.Cardboard;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Stack;
 
 public class PanelRenderer extends JPanel {
 
@@ -47,9 +50,18 @@ public class PanelRenderer extends JPanel {
                         g.setFont(font1);
                         g.setColor(Color.black);
                         g.drawString("Player " + (i+1) + "(" + game.getScore(i)  + "):", 10, y);
+
+                        // draw collection
                         for(singlesort.component.Component comp: game.getHands().get(i)) {
                             comp.draw(g, x, y);
                             x += Game.CELL_SIZE;
+                        }
+                        // draw trash
+                        for(Cardboard cardboard : game.getTable().getTrashHeap()) {
+                            if(game.getHands().get(i).getGoal().contains(cardboard.getColor(), cardboard.getFace().getValue())) {
+                                cardboard.draw(g, x, y);
+                                x += Game.CELL_SIZE;
+                            }
                         }
                         y += Game.CELL_SIZE + 20;
                         x = 200;
@@ -96,14 +108,18 @@ public class PanelRenderer extends JPanel {
                     g.drawString("Player: " + (game.getTurn() + 1) + "/" + game.getHands().size(), 50, Game.windowHeight - 65);
                     g.drawString("Score: " + game.getScore(), 50, Game.windowHeight - 45);
 
-
                     g.drawString("Goal: ", 50, Game.windowHeight - 25);
                     g.setFont(font3);
                     int x = 75;
                     for(Cardboard target : game.getHand().getGoal().getTargets()) {
                         x += 40;
                         g.setColor(Color.black);
-                        g.fillOval(x-2, Game.windowHeight - 44, 32, 32);
+                        if(target.getColor().equals(Color.yellow)) {
+                            g.fillOval(x - 2, Game.windowHeight - 44, 32, 32);
+                        } else {
+                            ((Graphics2D) g).setStroke(fatStroke);
+                            g.drawOval(x - 1, Game.windowHeight - 43, 30, 30);
+                        }
                         g.setColor(target.getColor());
                         g.drawString(target.getFace().getText(), x, Game.windowHeight - 15);
 
@@ -242,10 +258,30 @@ public class PanelRenderer extends JPanel {
                     } else {
                         g.drawString("2nd sixes: 0", Game.COLUMNS * Game.CELL_SIZE - (2 * Game.CELL_SIZE) -150, Game.ROWS * Game.CELL_SIZE + 10 + 75);
                     }
+
+                    // draw trash
+                    for(Cardboard cardboard : game.getTable().getTrashHeap()) {
+                        Point pt = game.getTable().getTrashMap().get(cardboard);
+                        drawTrash(g, cardboard, pt.y, pt.x);
+                    }
                 }
             }
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
+    }
+
+    private void drawTrash(Graphics g, Cardboard cardboard, int r, int c) {
+        cardboard.draw(g, c * Game.CELL_SIZE, r * Game.CELL_SIZE);
+        g.setColor(Color.red);
+
+        int x1 = c * Game.CELL_SIZE + 5;
+        int y1 = r * Game.CELL_SIZE + 5;
+        int x2 = c * Game.CELL_SIZE + Game.CELL_SIZE - 5;
+        int y2 = r * Game.CELL_SIZE + Game.CELL_SIZE - 5;
+
+        ((Graphics2D) g).setStroke(fatStroke);
+        g.drawLine(x1, y1, x2, y2);
+        g.drawLine(x2, y1, x1, y2);
     }
 }

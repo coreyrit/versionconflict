@@ -13,4 +13,13 @@ public class Goal {
     public Cardboard[] getTargets() {
         return targets;
     }
+
+    public boolean contains(Color color, int value) {
+        for(Cardboard cardboard : targets) {
+            if(cardboard.getColor().equals(color) && cardboard.getFace().getValue() == value) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

@@ -11,7 +11,7 @@ import java.util.List;
 
 public class Game { //extends JFrame implements MouseListener, MouseMotionListener {
     public static Random random = new Random();
-    public static String VERSION = "0.1.10";
+    public static String VERSION = "0.2.0";
 
     public static final int ROWS = 9;
     public static final int COLUMNS = 15;
@@ -31,8 +31,6 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
     private List<Cardboard> take;
 //    private Component lastSelected;
     private Component rotSelection;
-
-    private List<Cardboard> trashHeap;
 
     enum State {
         Take,
@@ -99,14 +97,10 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
 //        this.lastSelected = lastSelected;
 //    }
 
-    public List<Cardboard> getTrashHeap() {
-        return trashHeap;
-    }
-
     public boolean gameOver() {
-//        return getHand().size() > 2;
-        return getGameState() == Game.State.Take && getTake().size() == 0 &&
-                turn == 0 && getTable().countFaceDownCardboard() < hands.size();
+        return getHand().size() > 2;
+//        return getGameState() == Game.State.Take && getTake().size() == 0 &&
+//                turn == 0 && getTable().countFaceDownCardboard() < hands.size();
 //        return getGameState() == State.RecycleOrReduce;
     }
 
@@ -115,8 +109,6 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
 
         table = new Table(this);
         hands = new ArrayList<>();
-
-        trashHeap = new ArrayList<>();
 
         Stack<Goal> goals = new Stack<Goal>();
         if(players == 1) {
@@ -368,17 +360,7 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
 
     private void putAllInPile(Collection<Component> comps) {
         for(Component comp : comps) {
-            putInPile(comp);
-        }
-    }
-    private void putInPile(Component comp) {
-        for(int r = 0; r < ROWS; r++) {
-            for (int c = 0; c < COLUMNS; c++) {
-                if(table.get(r, c) == null) {
-                    table.set(r, c, comp);
-                    return;
-                }
-            }
+            table.putInPile(comp);
         }
     }
 
@@ -506,7 +488,7 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
 //                        lastSelected = collectCB;
                         for(Cardboard cardboard : take) {
                             if(cardboard != collectCB) {
-                                putInPile(cardboard);
+                                table.putInPile(cardboard);
                                 getHand().remove(cardboard);
                             }
                         }
@@ -534,7 +516,7 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
                     case RotSwap:
                         if(getHand().contains(component)) {
                             getHand().remove(component);
-                            putInPile(component);
+                            table.putInPile(component);
                             getHand().add(rotSelection);
                             table.remove(rotSelection);
                             rotSelection = null;
@@ -794,9 +776,13 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
 //                }
 //            }
 //        }
-        for(Cardboard dirtyCardboard : trashHeap) {
-            if(hands.size() == 1 && dirtyCardboard.getFace().getValue() == 3) {
-                score += 3;
+
+        for(Cardboard dirtyCardboard : table.getTrashHeap()) {
+//            if(hands.size() == 1 && dirtyCardboard.getFace().getValue() == 3) {
+//                score += 3;
+//            }
+            if(getHands().get(player).getGoal().contains(dirtyCardboard.getColor(), dirtyCardboard.getFace().getValue())) {
+                score += dirtyCardboard.getFace().getValue();
             }
         }
 

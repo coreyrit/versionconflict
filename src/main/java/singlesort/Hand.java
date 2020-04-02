@@ -64,7 +64,7 @@ public class Hand extends ArrayList<Component> {
             if(get(i) instanceof Cardboard && !((Cardboard)get(i)).getFace().isClean()) {
                 Cardboard dirtyCardboard = (Cardboard)get(i);
                 remove(dirtyCardboard);
-                game.getTrashHeap().add(dirtyCardboard);
+                game.getTable().addTrash(dirtyCardboard);
             }
         }
     }
