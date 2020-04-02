@@ -113,7 +113,11 @@ public class Main {
     }
 
     if(timer != null && !timer.equals("")) {
-      game.setTime(Integer.parseInt(timer));
+      try {
+        game.setTime(Integer.parseInt(timer));
+      } catch (Exception ex) {
+        game.setTime(0);
+      }
     } else {
       game.setTime(0);
     }
