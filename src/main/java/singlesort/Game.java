@@ -11,7 +11,7 @@ import java.util.List;
 
 public class Game { //extends JFrame implements MouseListener, MouseMotionListener {
     public static Random random = new Random();
-    public static String VERSION = "0.2.2";
+    public static String VERSION = "0.2.3";
 
     public static final int ROWS = 9;
     public static final int COLUMNS = 15;
@@ -31,6 +31,8 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
     private List<Cardboard> take;
 //    private Component lastSelected;
     private Component rotSelection;
+
+    private int time = 0;
 
     enum State {
         Take,
@@ -112,6 +114,7 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
     }
 
     public void setup(int players) {
+        time = 0;
         box = new Stack<Component>();
 
         table = new Table(this);
@@ -441,6 +444,14 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
         getHand().addAll(table.getSelected());
         getHand().getSelected().clear();
         table.getSelected().clear();
+    }
+
+    public void setTime(int time) {
+        this.time = time;
+    }
+
+    public int getTime() {
+        return this.time;
     }
 
     public void mouseClicked(MouseEvent e) {

@@ -1,6 +1,18 @@
 <html>
 <head>
     <script>
+        function startGameTimer() {
+            setInterval(()=>{if(document.hasFocus()){
+                var timeInSeconds = parseInt(getCookie("timer")) + 1;
+                console.log(timeInSeconds);
+                setCookie("timer", timeInSeconds, 1)
+            }}, 1000);
+        }
+
+        function stopGameTimer() {
+            clearInterval(x);
+        }
+
         function setCookie(cname, cvalue, exdays) {
             var d = new Date();
             d.setTime(d.getTime() + (exdays*24*60*60*1000));
@@ -80,6 +92,11 @@
             }
         }
 
+        function refresh(e) {
+            startGameTimer();
+            doSomething(e);
+        }
+
         function doSomething(e) {
             var id = getCookie("id");
             if(id === "") {
@@ -107,7 +124,7 @@
         }
     </script>
 </head>
-<body bgcolor="black" onload="doSomething()">
+<body bgcolor="black" onload="refresh()">
     <div style="position:absolute; left: 0px; top: 0px">
         <img id="game" src="/gameimg" onclick="doSomething()" onload="grayOut(false)" />
     </div>

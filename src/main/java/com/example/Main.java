@@ -33,6 +33,7 @@ import singlesort.PanelRenderer;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.imageio.ImageIO;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 import java.awt.*;
@@ -72,10 +73,13 @@ public class Main {
 
   @RequestMapping(path = "/newgame", method = RequestMethod.GET)
   public RedirectView newGame(@RequestParam(name = "players", defaultValue = "1") Integer players,
-                              @CookieValue("id") String id) {
+                              @CookieValue("id") String id,
+                              HttpServletResponse response) {
     Game game = new Game(players);
     games.put(id, game);
     panelRenderers.put(game, new PanelRenderer(game));
+
+    response.addCookie(new Cookie("timer", "0"));
 
     return new RedirectView("game");
   }
@@ -86,9 +90,11 @@ public class Main {
           @RequestParam(name = "y", defaultValue = "-10") Integer y,
           @RequestParam(name = "id", defaultValue = "0") String id,
           @CookieValue("id") String cookieId,
+          @CookieValue("timer") String timer,
           HttpServletResponse response) throws IOException {
       String contentType = "application/octet-stream";
       response.setContentType(contentType);
+
       OutputStream out = response.getOutputStream();
 
       if(id.equals("0")) {
@@ -105,6 +111,7 @@ public class Main {
       games.put(id, game);
       panelRenderers.put(game, new PanelRenderer(game));
     }
+      game.setTime(Integer.parseInt(timer));
       game.mouseClicked(x, y);
 //    }
 

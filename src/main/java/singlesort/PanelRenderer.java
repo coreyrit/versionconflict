@@ -104,6 +104,7 @@ public class PanelRenderer extends JPanel {
                     final Properties properties = new Properties();
                     properties.load(getClass().getClassLoader().getResourceAsStream("application.properties"));
                     g.drawString("Version: " + Game.VERSION, 50, Game.windowHeight - 90);
+                    g.drawString("Elapsed: " + game.getTime(), 200, Game.windowHeight - 90);
                     g.setFont(font1);
                     g.drawString("Player: " + (game.getTurn() + 1) + "/" + game.getHands().size(), 50, Game.windowHeight - 65);
                     g.drawString("Score: " + game.getScore(), 50, Game.windowHeight - 45);
