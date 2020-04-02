@@ -3,7 +3,11 @@
     <script>
         function startGameTimer() {
             setInterval(()=>{if(document.hasFocus()){
-                var timeInSeconds = parseInt(getCookie("timer")) + 1;
+                var timer = getCookie("timer");
+                if(timer === "") {
+                    timer = "0"
+                }
+                var timeInSeconds = parseInt(timer) + 1;
                 console.log(timeInSeconds);
                 setCookie("timer", timeInSeconds, 1)
             }}, 1000);
