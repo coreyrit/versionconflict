@@ -223,17 +223,22 @@ public class PanelRenderer extends JPanel {
                     boolean repair = game.getGameState() == Game.State.RepairOrRepurpose &&
                             (game.getHand().getSelected().size() == 1 || (game.getHand().getSelected().size() > 1 && game.getHand().getSelected().getColor().equals(Color.black)));
 
+                    boolean takeOrCollect = game.getGameState() == Game.State.Take || game.getGameState() == Game.State.Collect;
+
                     if (newGame) {
                         g.setColor(Color.green);
                     } else if (repair) {
                         g.setColor(Color.gray);
-                    } else {
+                    } else if(!takeOrCollect) {
                         g.setColor(Color.red);
                     }
-                    g.fillRect(Game.COLUMNS * Game.CELL_SIZE - (2 * Game.CELL_SIZE) + 10, Game.ROWS * Game.CELL_SIZE + 10, 2 * Game.CELL_SIZE - 20, Game.CELL_SIZE - 20);
-                    g.setColor(Color.black);
-                    ((Graphics2D) g).setStroke(fatStroke);
-                    g.drawRect(Game.COLUMNS * Game.CELL_SIZE - (2 * Game.CELL_SIZE) + 10, Game.ROWS * Game.CELL_SIZE + 10, 2 * Game.CELL_SIZE - 20, Game.CELL_SIZE - 20);
+
+                    if(!takeOrCollect) {
+                        g.fillRect(Game.COLUMNS * Game.CELL_SIZE - (2 * Game.CELL_SIZE) + 10, Game.ROWS * Game.CELL_SIZE + 10, 2 * Game.CELL_SIZE - 20, Game.CELL_SIZE - 20);
+                        g.setColor(Color.black);
+                        ((Graphics2D) g).setStroke(fatStroke);
+                        g.drawRect(Game.COLUMNS * Game.CELL_SIZE - (2 * Game.CELL_SIZE) + 10, Game.ROWS * Game.CELL_SIZE + 10, 2 * Game.CELL_SIZE - 20, Game.CELL_SIZE - 20);
+                    }
 
                     if (newGame) {
                         g.setColor(Color.black);
@@ -241,7 +246,7 @@ public class PanelRenderer extends JPanel {
                     } else if (repair) {
                         g.setColor(Color.black);
                         g.drawString("Rethink", Game.COLUMNS * Game.CELL_SIZE - (2 * Game.CELL_SIZE) + 10 + 50, Game.ROWS * Game.CELL_SIZE + 10 + 50);
-                    } else {
+                    } else if(!takeOrCollect) {
                         g.setColor(Color.white);
                         g.drawString("End Turn", Game.COLUMNS * Game.CELL_SIZE - (2 * Game.CELL_SIZE) + 10 + 50, Game.ROWS * Game.CELL_SIZE + 10 + 50);
                     }
