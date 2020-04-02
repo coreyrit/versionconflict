@@ -11,7 +11,7 @@ import java.util.List;
 
 public class Game { //extends JFrame implements MouseListener, MouseMotionListener {
     public static Random random = new Random();
-    public static String VERSION = "0.2.0";
+    public static String VERSION = "0.2.1";
 
     public static final int ROWS = 9;
     public static final int COLUMNS = 15;
@@ -98,9 +98,9 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
 //    }
 
     public boolean gameOver() {
-        return getHand().size() > 2;
-//        return getGameState() == Game.State.Take && getTake().size() == 0 &&
-//                turn == 0 && getTable().countFaceDownCardboard() < hands.size();
+//        return getHand().size() > 2;
+        return getGameState() == Game.State.Take && getTake().size() == 0 &&
+                turn == 0 && getTable().countFaceDownCardboard() < hands.size();
 //        return getGameState() == State.RecycleOrReduce;
     }
 
