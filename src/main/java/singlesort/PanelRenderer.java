@@ -33,6 +33,24 @@ public class PanelRenderer extends JPanel {
     }
 
 
+    private void drawVersionAndTime(Graphics g) {
+        g.setColor(Color.black);
+        g.setFont(font0);
+
+
+        int s = game.getTime();
+        int sec = s % 60;
+        int min = (s / 60)%60;
+        int hours = (s/60)/60;
+
+        g.drawString("Version: " + Game.VERSION, 50, Game.windowHeight - 90);
+        g.drawString("Elapsed: " +
+                (hours > 0 ? hours + ":" : "") +
+                (hours > 0 && min < 10 ? "0" : "") + (min > 0 ? min + ":" : "0:") +
+                (sec < 10 ? "0" : "") + sec,
+                200, Game.windowHeight - 90);
+    }
+
     @Override
     public void paint(Graphics g) {
         super.paint(g);
@@ -76,6 +94,7 @@ public class PanelRenderer extends JPanel {
                     g.setColor(Color.black);
                     g.drawString("New Game", Game.COLUMNS * Game.CELL_SIZE - (2 * Game.CELL_SIZE) + 10 + 50, Game.ROWS * Game.CELL_SIZE + 10 + 50);
 
+                    drawVersionAndTime(g);
                 } else {
                     for (int r = 0; r < Game.ROWS; r++) {
                         for (int c = 0; c < Game.COLUMNS; c++) {
@@ -98,13 +117,9 @@ public class PanelRenderer extends JPanel {
                         game.getHand().get(i).draw(g, x, y);
                     }
 
+                    drawVersionAndTime(g);
 
                     g.setColor(Color.black);
-                    g.setFont(font0);
-                    final Properties properties = new Properties();
-                    properties.load(getClass().getClassLoader().getResourceAsStream("application.properties"));
-                    g.drawString("Version: " + Game.VERSION, 50, Game.windowHeight - 90);
-                    g.drawString("Elapsed: " + game.getTime(), 200, Game.windowHeight - 90);
                     g.setFont(font1);
                     g.drawString("Player: " + (game.getTurn() + 1) + "/" + game.getHands().size(), 50, Game.windowHeight - 65);
                     g.drawString("Score: " + game.getScore(), 50, Game.windowHeight - 45);
