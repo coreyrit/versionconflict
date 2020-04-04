@@ -87,6 +87,7 @@ public class Table implements Serializable {
     }
 
     public void addTrash(Cardboard cardboard) {
+        cardboard.setHighlight(false);
         trashHeap.add(cardboard);
         Point pt = findFirstNull();
         trashMap.put(cardboard, pt);

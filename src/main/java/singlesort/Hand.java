@@ -6,6 +6,7 @@ import versionconflict.Card;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Comparator;
 
 public class Hand extends ArrayList<Component> {
     private Selection selected;
@@ -73,6 +74,16 @@ public class Hand extends ArrayList<Component> {
         int count = 0;
         for(Component component : this) {
             if(!(component instanceof Plastic) || ((Plastic)component).getFace().getValue() != 4) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public int countMaterial(Component.Material material) {
+        int count = 0;
+        for(Component component : this) {
+            if(component.getMaterial() == material) {
                 count++;
             }
         }

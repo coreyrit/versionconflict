@@ -1,6 +1,7 @@
 package singlesort.ai;
 
 import singlesort.Game;
+import singlesort.component.Component;
 
 import java.awt.*;
 import java.util.*;
@@ -20,6 +21,10 @@ public class Tree {
         this.trunk = new Branch(null, trunk, game.deepClone(), 0);
     }
 
+    public int getPlayer() {
+        return player;
+    }
+
     private void trace(Branch branch, Stack<Branch> stack) {
         stack.add(branch);
         if(branch.getParent() != null && branch.getParent().getParent() != null) {
@@ -29,7 +34,7 @@ public class Tree {
 
     private boolean isLeaf(Branch branch) {
         return !branch.getGame().hasHighlightsExcludingSelections() ||
-                branch.getGame().getGameState() == Game.State.Take ||
+                //branch.getGame().getGameState() == Game.State.Take ||
                 branch.getGame().getTurn() != player;
     }
 
@@ -40,14 +45,23 @@ public class Tree {
         bfs.add(trunk);
 
         long startTime = new Date().getTime();
+        int maxDepth = 0;
         while(bfs.size() > 0 && new Date().getTime()-startTime < MAX_TIME && bfs.get(0).getDepth() < MAX_DEPTH) {
             Branch branch = bfs.remove(0);
+            maxDepth = Math.max(maxDepth, branch.getDepth());
             if(isLeaf(branch)) {
                 leaves.add(branch);
             } else {
-                bfs.addAll(branch.think());
+                List<Branch> next = branch.think();
+
+                // random pruning (deeper you go, do more pruning)
+                while(next.size() > Math.max(0, MAX_DEPTH - branch.getDepth())) {
+                    leaves.add(next.remove(Game.random.nextInt(next.size())));
+                }
+                bfs.addAll(next);
             }
         }
+        System.out.println(maxDepth);
 
         // what's left in the queue are the "leaves"
         leaves.addAll(bfs);
@@ -64,6 +78,11 @@ public class Tree {
         // find the best path
         for(Branch branch : leaves) {
             int score = branch.getGame().getScore(player);
+
+            // bump score by metal
+//            score += branch.getGame().getHands().get(player).countMaterial(Component.Material.Glass) * 20;
+//            score += branch.getGame().getHands().get(player).countMaterial(Component.Material.Metal) * 100;
+
             if(score > maxScore) {
                 maxScore = score;
             }
@@ -75,22 +94,14 @@ public class Tree {
 
         // walk back up
         if(maxScore >= 0) {
-            List<Branch> bestBrances = mapBranches.get(maxScore);
-
-            // break ties with smallest collection
-            int smallest = Integer.MAX_VALUE;
-            Branch bestScore = null;
-            for(Branch branch : bestBrances) {
-                if(branch.getGame().getHands().get(player).size() < smallest) {
-                    bestScore = branch;
-                    smallest = branch.getGame().getHands().get(player).size();
-                }
-            }
+            List<Branch> bestBranches = mapBranches.get(maxScore);
+            bestBranches.sort(new LeastComponents(this));
 
             Stack<Branch> stack = new Stack<>();
-            trace(bestScore, stack);
+            if(bestBranches.size() > 0) {
+                trace(bestBranches.get(0), stack);
+            }
 
-            // just do 1 for now
             boolean progress = false;
             while(stack.size() > 0 && (stack.peek().getGame().getGameState() != Game.State.Take || !progress)) {
                 Point point = stack.pop().getPoint();

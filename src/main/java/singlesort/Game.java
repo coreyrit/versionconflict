@@ -1,15 +1,15 @@
 package singlesort;
 
+import singlesort.ai.Tree;
 import singlesort.component.*;
 import singlesort.component.Component;
-import versionconflict.Card;
 
 import java.awt.*;
-import java.awt.event.MouseEvent;
+import java.io.*;
 import java.util.*;
 import java.util.List;
 
-public class Game { //extends JFrame implements MouseListener, MouseMotionListener {
+public class Game implements Cloneable, Serializable {
     public static Random random = new Random();
     public static String VERSION = "0.2.6";
 
@@ -19,9 +19,6 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
 
     public static int windowWidth = COLUMNS*CELL_SIZE+200;
     public static int windowHeight = ROWS*CELL_SIZE + 100;
-//    private Insets insets;
-
-    private Stack<Component> box;
 
     private Table table;
     private int turn;
@@ -29,12 +26,11 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
 
     private State state;
     private List<Cardboard> take;
-//    private Component lastSelected;
     private Component rotSelection;
 
     private int time = 0;
 
-    enum State {
+    public enum State {
         Take,
         Collect,
         Rot,
@@ -48,27 +44,29 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
 
     public Game(int players) {
         setup(Math.max(1, Math.min(players, 6)));
-
-        PanelRenderer panelRenderer1 = new PanelRenderer(this);
-//        this.setLayout(new BorderLayout());
-//        this.add(panelRenderer1, BorderLayout.CENTER);
-//        this.pack();
-
-//        setTitle("Single-Sort");
-//        setSize(windowWidth, windowHeight);
-//        setResizable(false);
-//        setDefaultCloseOperation(EXIT_ON_CLOSE);
-//        setVisible(true);
-
-//        insets = getInsets();
-//        setSize(insets.left + windowWidth + insets.right, insets.top + windowHeight + insets.bottom);
-
-//        this.addMouseListener(this);
-//        this.addMouseMotionListener(this);
     }
 
-    public List<Component> getBox() {
-        return box;
+    public Game clone() {
+        try {
+            return (Game) super.clone();
+        } catch (CloneNotSupportedException e) {
+            return null;
+        }
+    }
+
+    public Game deepClone() {
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(baos);
+            oos.writeObject(this);
+
+            ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+            ObjectInputStream ois = new ObjectInputStream(bais);
+            return (Game) ois.readObject();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public Table getTable() {
@@ -91,14 +89,6 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
         return take;
     }
 
-//    public Cardboard getLastSelected() {
-//        return lastSelected;
-//    }
-
-//    public void setLastSelected(Cardboard lastSelected) {
-//        this.lastSelected = lastSelected;
-//    }
-
     public boolean gameOver() {
 //        return getHand().size() > 2;
         if(getGameState() == Game.State.Take) {
@@ -115,7 +105,7 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
 
     public void setup(int players) {
         time = 0;
-        box = new Stack<Component>();
+        Stack<Component> box = new Stack<Component>();
 
         table = new Table(this);
         hands = new ArrayList<>();
@@ -145,7 +135,6 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
 
         state = State.Take;
         take = new ArrayList<Cardboard>();
-//        lastSelected = null;
         rotSelection = null;
 
         int[] cleanCardboards = new int[] { 7, 6, 3, 2, 1, 1, 1 };
@@ -194,18 +183,20 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
             }
         }
 
-//        Cardboard cb = Cardboard.createGreenCleanCardboard(1);
-//        cb.setFaceUp(false);
-//        table.set(0, 0, cb);
-
         updateHighlights();
     }
 
+    private boolean hasHighlightsExcludingSelections= false;
+
     public boolean updateHighlights() {
+        Set<MatchedComponent> matches = new HashSet<MatchedComponent>();
+
         for(int r = 0; r < ROWS; r++) {
             for(int c = 0; c < COLUMNS; c++) {
                 Component comp = table.get(r, c);
                 if(comp != null) {
+                    MatchedComponent mc = new MatchedComponent(comp);
+
                     comp.setHighlight(false);
                     switch(state) {
                         case Take:
@@ -215,16 +206,19 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
                             }
                             break;
                         case Rot:
-                            if(comp instanceof Cardboard) {
-                                Cardboard cb = (Cardboard) comp;
-//                                cb.setHighlight(cb.isFaceUp());
-                                cb.setHighlight(cb.isFaceUp() && getHand().hasCardboardNotColor(cb.getFace().getValue(), cb.getColor()));
-                            } else if(comp instanceof Plastic) {
-                                Plastic plastic = (Plastic) comp;
-                                plastic.setHighlight(getHand().hasPlasticNotColor(plastic.getFace().getValue(), plastic.getColor()));
-                            } else if(comp instanceof Glass){
-//                                comp.setHighlight(comp instanceof Plastic || comp instanceof Glass);
-                                comp.setHighlight(getHand().hasGlassNotColor(comp.getColor()));
+                            if(!matches.contains(mc)) {
+                                if (comp instanceof Cardboard) {
+                                    Cardboard cb = (Cardboard) comp;
+                                    cb.setHighlight(cb.isFaceUp() && getHand().hasCardboardNotColor(cb.getFace().getValue(), cb.getColor()));
+                                } else if (comp instanceof Plastic) {
+                                    Plastic plastic = (Plastic) comp;
+                                    plastic.setHighlight(getHand().hasPlasticNotColor(plastic.getFace().getValue(), plastic.getColor()));
+                                } else if (comp instanceof Glass) {
+                                    comp.setHighlight(getHand().hasGlassNotColor(comp.getColor()));
+                                }
+                            }
+                            if(comp.isHighlight() && ai && !getTable().getSelected().contains(comp)) {
+                                matches.add(mc);
                             }
                             break;
                         case RotSwap:
@@ -233,7 +227,7 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
                         case RecycleOrReduce:
                             if(table.getSelected().contains(comp)) {
                                 comp.setHighlight(true);
-                            } else if(comp instanceof Cardboard && getHand().getSelected().size() < 2) {
+                            } else if(comp instanceof Cardboard && getHand().getSelected().size() < 2 && !matches.contains(mc)) {
                                 Cardboard cb = (Cardboard) comp;
                                 if(cb.isFaceUp() && cb.getColor().equals(getHand().getSelected().getColor())) {
                                     if(table.getSelected().size() == 0) {
@@ -245,17 +239,27 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
                                     }
                                 }
 
-                            } else if(table.getSelected().size() == 0 && comp instanceof Plastic) {
+                                if(cb.isHighlight() && ai && !getTable().getSelected().contains(comp)) {
+                                    matches.add(mc);
+                                }
+                            } else if(table.getSelected().size() == 0 && comp instanceof Plastic && !matches.contains(mc)) {
                                 Plastic pl = (Plastic)comp;
                                 pl.setHighlight(pl.getColor().equals(getHand().getSelected().getColor()) &&
                                         getHand().getSelected().getCardboardTotal() == pl.getFace().getValue() &&
                                         pl.getFace().getValue() < 6);
+
+                                if(pl.isHighlight() && ai && !getTable().getSelected().contains(comp)) {
+                                    matches.add(mc);
+                                }
                             }
                             break;
                         case RepairOrRepurpose:
-                            if(getHand().getSelected().size() == 2 && comp instanceof Glass) {
+                            if(getHand().getSelected().size() == 2 && comp instanceof Glass && !matches.contains(mc)) {
                                 Glass glass = (Glass)comp;
                                 glass.setHighlight(glass.getColor().equals(getHand().getSelected().getColor()));
+                                if(glass.isHighlight() && ai && !getTable().getSelected().contains(comp)) {
+                                    matches.add(mc);
+                                }
                             }
                             break;
                         case ReuseOrReturn:
@@ -275,69 +279,110 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
                 }
             }
         }
-        for(Component comp : getHand()) {
-            comp.setHighlight(false);
-            switch(state) {
-                case Collect:
-                    comp.setHighlight(comp instanceof Cardboard && take.contains((Cardboard)comp));
-                    break;
-                case Rot:
-                case RecycleOrReduce:
-                    comp.setHighlight(!(comp instanceof Metal));
-                    break;
-                case RotSwap:
-                    if(rotSelection.getMaterial().equals(comp.getMaterial())) {
-                        switch (rotSelection.getMaterial()) {
-                            case Cardboad:
-                                Cardboard rotCb = (Cardboard) rotSelection;
-                                Cardboard handCb = (Cardboard) comp;
-                                comp.setHighlight(!rotCb.getColor().equals(handCb.getColor()) && rotCb.getFace().getValue() == handCb.getFace().getValue());
-                                break;
-                            case Plastic:
-                                Plastic rotPlastic = (Plastic) rotSelection;
-                                Plastic handPlastic = (Plastic) comp;
-                                comp.setHighlight(!rotPlastic.getColor().equals(handPlastic.getColor()) && rotPlastic.getFace().getValue() == handPlastic.getFace().getValue());
-                                break;
-                            case Glass:
-                                comp.setHighlight(!rotSelection.getColor().equals(comp.getColor()));
-                                break;
-                        }
-                    }
-                    break;
-                case RepairOrRepurpose:
-                    if(comp instanceof Plastic) {
-                        Plastic plastic = (Plastic)comp;
-                        if(getHand().getSelected().contains(plastic)) {
-                            plastic.setHighlight(true);
-                        } else {
-                            switch (hands.size()) {
-                                case 1:
-                                case 2:
-                                    comp.setHighlight(getHand().getSelected().size() != 2 || !getHand().getSelected().getColor().equals(plastic.getColor()));
-                                    break;
-                                case 3:
-                                case 4:
-                                    comp.setHighlight(getHand().getSelected().size() <= 1);
-                                    break;
-                                case 5:
-                                case 6:
-                                    comp.setHighlight(getHand().getSelected().size() < 2 || getHand().getSelected().getColor().equals(Color.black));
-                                    break;
 
+        Set<MatchedComponent> matchedComponents = new HashSet<>();
+        for(Component comp : getHand()) {
+            MatchedComponent mc = new MatchedComponent(comp);
+            comp.setHighlight(false);
+
+            if(!matchedComponents.contains(mc)) {
+                switch(state) {
+                    case Collect:
+                        comp.setHighlight(comp instanceof Cardboard && take.contains((Cardboard) comp));
+                        break;
+                    case Rot:
+                    case RecycleOrReduce:
+                        if (getHand().getSelected().contains(comp)) {
+                            comp.setHighlight(true);
+                        } else if (getHand().getSelected().size() == 0) {
+                            comp.setHighlight(!(comp instanceof Metal));
+                        } else {
+                            comp.setHighlight(comp instanceof Cardboard && comp.getColor().equals(getHand().getSelected().getColor()));
+                        }
+                        break;
+                    case RotSwap:
+                        if (rotSelection.getMaterial().equals(comp.getMaterial())) {
+                            switch (rotSelection.getMaterial()) {
+                                case Cardboad:
+                                    Cardboard rotCb = (Cardboard) rotSelection;
+                                    Cardboard handCb = (Cardboard) comp;
+                                    comp.setHighlight(!rotCb.getColor().equals(handCb.getColor()) && rotCb.getFace().getValue() == handCb.getFace().getValue());
+                                    break;
+                                case Plastic:
+                                    Plastic rotPlastic = (Plastic) rotSelection;
+                                    Plastic handPlastic = (Plastic) comp;
+                                    comp.setHighlight(!rotPlastic.getColor().equals(handPlastic.getColor()) && rotPlastic.getFace().getValue() == handPlastic.getFace().getValue());
+                                    break;
+                                case Glass:
+                                    comp.setHighlight(!rotSelection.getColor().equals(comp.getColor()));
+                                    break;
                             }
                         }
-                    } else {
+                        break;
+                    case RepairOrRepurpose:
+                        if (comp instanceof Plastic) {
+                            Plastic plastic = (Plastic) comp;
+                            if (getHand().getSelected().contains(plastic)) {
+                                plastic.setHighlight(true);
+                            } else {
+                                switch (hands.size()) {
+                                    case 1:
+                                    case 2:
+                                        comp.setHighlight(getHand().getSelected().size() == 0 || comp.getColor().equals(getHand().getSelected().getColor()));
+                                        break;
+                                    case 3:
+                                    case 4:
+                                        comp.setHighlight(getHand().getSelected().size() <= 1);
+                                        break;
+                                    case 5:
+                                    case 6:
+                                        comp.setHighlight(getHand().getSelected().size() <= 1 || !comp.getColor().equals(getHand().getSelected().getColor()));
+                                        break;
+
+                                }
+                            }
+                        } else {
+                            comp.setHighlight(comp instanceof Glass);
+                        }
+                        break;
+                    case ReuseOrReturn:
                         comp.setHighlight(comp instanceof Glass);
-                    }
-                    break;
-                case ReuseOrReturn:
-                    comp.setHighlight(comp instanceof Glass);
-                    break;
-                case CleanUp:
-                    comp.setHighlight(true);
-                    break;
+                        break;
+                    case CleanUp:
+                        comp.setHighlight(true);
+                        break;
+                }
+                if(comp.isHighlight() && !getHand().getSelected().contains(comp) && ai) {
+                    matchedComponents.add(mc);
+                }
             }
         }
+        return hasHighlights();
+    }
+
+    public boolean inRepair() {
+        return this.getGameState() == Game.State.RepairOrRepurpose &&
+                (this.getHand().getSelected().size() == 1 || (this.getHand().getSelected().size() > 1 && this.getHand().getSelected().getColor().equals(Color.black)));
+    }
+
+    public boolean hasHighlightsExcludingSelections() {
+        for(int r = 0; r < ROWS; r++) {
+            for (int c = 0; c < COLUMNS; c++) {
+                Component comp = table.get(r, c);
+                if (comp != null && comp.isHighlight() && !table.getSelected().contains(comp)) {
+                    return true;
+                }
+            }
+        }
+        for(Component comp : getHand()) {
+            if(comp.isHighlight() && !getHand().getSelected().contains(comp)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean hasHighlights() {
         for(int r = 0; r < ROWS; r++) {
             for (int c = 0; c < COLUMNS; c++) {
                 if (table.get(r, c) != null && table.get(r, c).isHighlight()) {
@@ -348,21 +393,6 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
         for(Component comp : getHand()) {
             if(comp.isHighlight()) {
                 return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean lookForDirtyCardboard(int value) {
-        for(int r = 0; r < ROWS; r++) {
-            for (int c = 0; c < COLUMNS; c++) {
-                Component comp = table.get(r, c);
-                if(comp instanceof Cardboard) {
-                    Cardboard cb = (Cardboard)comp;
-                    if(cb.isFaceUp() && cb.getFace().getValue() == value && cb.getFace().isClean()) {
-                        return true;
-                    }
-                }
             }
         }
         return false;
@@ -382,19 +412,7 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
                    endTurn();
                }
                return true;
-           }
-           // plastic is special.. double click will roll
-           /*else if (state == State.RepairOrRepurpose &&
-                   component instanceof Plastic &&
-                   getHand().getSelected().size() == 1 &&
-                   getHand().getSelected().contains(component)) {
-               ((Plastic)component).roll();
-               getHand().getSelected().clear();
-               table.getSelected().clear();
-               state = State.ReuseOrReturn;
-               return true;
-           } */
-            else {
+           } else {
                getHand().getSelected().updateSelection(component);
                if (getHand().getSelected().isEmpty()) {
                    table.getSelected().clear();
@@ -454,12 +472,11 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
         return this.time;
     }
 
-    public void mouseClicked(MouseEvent e) {
-        mouseClicked(e.getX(), e.getY()-20);
-    }
-    public void mouseClicked(int x, int y) {
+    private static boolean ai = true;
+
+    public Component getComponentAt(int x, int y) {
         if(x < 0 || y < 0) {
-            return;
+            return null;
         }
 
         int r = y / CELL_SIZE;
@@ -473,12 +490,30 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
         }
 
         Component component = null;
+
         if(r < ROWS && c < COLUMNS) {
             component = table.get(r, c);
         }
         if(component == null && x > CELL_SIZE * COLUMNS && index >= 0 && index < getHand().size()) {
             component = getHand().get(index);
         }
+        return component;
+    }
+
+    public Game mouseClicked(int x, int y) {
+
+
+        if(!ai && getGameState() != State.Take) { // && turn != 0) {
+            // lets try the AI
+            ai = true;
+            Tree tree = new Tree(turn, this);
+            tree.performTurn();
+            ai = false;
+            return this;
+        }
+
+
+        Component component = getComponentAt(x, y);
         if(!gameOver() && component != null && component.isHighlight()) {
             if(!handSelect(component)) {
                 switch (state) {
@@ -490,20 +525,13 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
                         take.add(takeCB);
                         if(hands.size() > 1) {
                             take.clear();
-//                            Cardboard collectCB = (Cardboard) component;
-//                            lastSelected = collectCB;
-//                            if (collectCB.getFace().isClean() && lookForDirtyCardboard(collectCB.getFace().getValue())) {
-                                state = State.Rot;
-//                            } else {
-//                                state = State.RecycleOrReduce;
-//                            }
+                            state = State.Rot;
                         } else if(hands.size() == 1 && take.size() == 2) {
                             state = State.Collect;
                         }
                         break;
                     case Collect:
                         Cardboard collectCB = (Cardboard) component;
-//                        lastSelected = collectCB;
                         for(Cardboard cardboard : take) {
                             if(cardboard != collectCB) {
                                 table.putInPile(cardboard);
@@ -511,23 +539,12 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
                             }
                         }
                         take.clear();
-//                        if (collectCB.getFace().isClean() && lookForDirtyCardboard(collectCB.getFace().getValue())) {
-                            state = State.Rot;
-//                        } else {
-//                            state = State.RecycleOrReduce;
-//                        }
+                        state = State.Rot;
                         break;
                     case Rot:
                         if (!getHand().contains(component)) {
                             rotSelection = component;
                             table.getSelected().updateSelection(rotSelection);
-//                            getHand().remove(lastSelected);
-//                            putInPile(lastSelected);
-//                            lastSelected = (Cardboard) component;
-//                            table.remove(component);
-//                            getHand().add(component);
-//                            getHand().getSelected().clear();
-//                            state = State.EndTurn;
                             state = State.RotSwap;
                         }
                         break;
@@ -552,7 +569,6 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
                             Cardboard cb = (Cardboard) component;
                             table.getSelected().updateSelection(cb);
 
-                            //if (table.getSelected().size() == 2) {
                             if(table.getSelected().getCardboardTotal() == getHand().getSelected().getCardboardTotal()) {
                                 swapSelections();
                                 state = State.RepairOrRepurpose;
@@ -576,7 +592,6 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
                         if (!getHand().contains(component) && (component instanceof Metal || component instanceof Plastic)) {
                             table.getSelected().updateSelection(component);
                             swapSelections();
-//                            endTurn();
                             state = State.EndTurn;
                         }
                         break;
@@ -585,13 +600,13 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
             }
         }
 
-        Rectangle endTurnButton = new Rectangle(Game.COLUMNS*Game.CELL_SIZE - (2*Game.CELL_SIZE) + 10, Game.ROWS*Game.CELL_SIZE + 10, 2*Game.CELL_SIZE - 20, Game.CELL_SIZE - 20);
+        Rectangle endTurnButton = getButtonBounds();
         if(gameOver() && endTurnButton.contains(x, y)) {
             setup(hands.size());
         } else if(endTurnButton.contains(x, y) && state == State.RepairOrRepurpose) {
             if(getHand().getSelected().size() == 0) {
                 endTurn();
-            } else if(getHand().getSelected().size() == 2 && !getHand().getSelected().getColor().equals(Color.black)) {
+            } else if(getHand().getSelected().size() >= 2 && !getHand().getSelected().getColor().equals(Color.black)) {
                 endTurn();
             } else {
                 for(Component comp : getHand().getSelected()) {
@@ -613,31 +628,11 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
                 updateHighlights();
             }
         }
-//        this.repaint();
+        return this;
     }
 
-    public void mousePressed(MouseEvent e) {
-
-    }
-
-    public void mouseReleased(MouseEvent e) {
-
-    }
-
-    public void mouseEntered(MouseEvent e) {
-
-    }
-
-    public void mouseExited(MouseEvent e) {
-
-    }
-
-    public void mouseDragged(MouseEvent e) {
-
-    }
-
-    public void mouseMoved(MouseEvent e) {
-
+    public Rectangle getButtonBounds() {
+        return new Rectangle(Game.COLUMNS*Game.CELL_SIZE - (2*Game.CELL_SIZE) + 10, Game.ROWS*Game.CELL_SIZE + 10, 2*Game.CELL_SIZE - 20, Game.CELL_SIZE - 20);
     }
 
     public int getTurn() {
@@ -728,15 +723,11 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
                         score += plastic.getFace().getValue();
                         break;
                     case 3:
-//                        if(cardboardColors.size() == 3) {
-//                        if(cardboardTotal >= 3) {
                         if(mapColorCardboard.containsKey(plastic.getColor()) && mapColorCardboard.get(plastic.getColor()) >= 3) {
                             score += 3;
                         }
                         break;
                     case 5:
-//                        if(cardboardTotal == 5) {
-//                        if(cardboardTotal >= 5) {
                         if(mapColorCardboard.containsKey(plastic.getColor()) && mapColorCardboard.get(plastic.getColor()) >= 5) {
                             score += 5;
                         }
@@ -775,30 +766,12 @@ public class Game { //extends JFrame implements MouseListener, MouseMotionListen
         } else {
             if(sixCounts.size() > 0 && plastic6count == sixCounts.get(0)) {
                 score += (14-hands.size());
-//                score += 12;
             } else if (sixCounts.size() > 1 && plastic6count == sixCounts.get(1)) {
                 score += (8-hands.size());
-//                score += 6;
             }
         }
 
-        // penalties
-//        for(int r = 0; r < ROWS; r++) {
-//            for (int c = 0; c < COLUMNS; c++) {
-//                Component component = table.get(r, c);
-//                if(component != null && component.getMaterial() == Component.Material.Cardboad) {
-//                    Cardboard cb = (Cardboard)component;
-//                    if(hands.size() == 1 && cb.isFaceUp() && !cb.getFace().isClean() && cb.getFace().getValue() == 3) {
-//                        score -= 3;
-//                    }
-//                }
-//            }
-//        }
-
         for(Cardboard dirtyCardboard : table.getTrashHeap()) {
-//            if(hands.size() == 1 && dirtyCardboard.getFace().getValue() == 3) {
-//                score += 3;
-//            }
             if(getHands().get(player).getGoal().contains(dirtyCardboard.getColor(), dirtyCardboard.getFace().getValue())) {
                 score += dirtyCardboard.getFace().getValue();
             }
