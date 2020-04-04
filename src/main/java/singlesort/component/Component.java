@@ -4,8 +4,9 @@ import singlesort.Game;
 import singlesort.PanelRenderer;
 
 import java.awt.*;
+import java.io.Serializable;
 
-public abstract class Component {
+public abstract class Component implements Serializable {
     private Game game;
 
     public enum Material {

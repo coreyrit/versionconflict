@@ -1,8 +1,9 @@
 package singlesort.component;
 
 import java.awt.*;
+import java.io.Serializable;
 
-public class Goal {
+public class Goal implements Serializable {
 
     private Cardboard[] targets;
 

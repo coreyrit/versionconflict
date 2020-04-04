@@ -4,10 +4,11 @@ import singlesort.component.Cardboard;
 import singlesort.component.Component;
 
 import java.awt.*;
+import java.io.Serializable;
 import java.util.*;
 import java.util.List;
 
-public class Table {
+public class Table implements Serializable {
     private Component[][] table = new Component[Game.ROWS][Game.COLUMNS];
     private Selection selection;
 

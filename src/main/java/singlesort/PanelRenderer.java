@@ -236,9 +236,7 @@ public class PanelRenderer extends JPanel {
 
                     }
 
-                    boolean repair = game.getGameState() == Game.State.RepairOrRepurpose &&
-                            (game.getHand().getSelected().size() == 1 || (game.getHand().getSelected().size() > 1 && game.getHand().getSelected().getColor().equals(Color.black)));
-
+                    boolean repair = game.inRepair();
                     boolean takeOrCollect = game.getGameState() == Game.State.Take || game.getGameState() == Game.State.Collect;
 
                     if (newGame) {
