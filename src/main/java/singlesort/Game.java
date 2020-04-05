@@ -11,7 +11,7 @@ import java.util.List;
 
 public class Game implements Cloneable, Serializable {
     public static Random random = new Random();
-    public static String VERSION = "0.2.6";
+    public static String VERSION = "0.3.0";
 
     public static final int ROWS = 9;
     public static final int COLUMNS = 15;
@@ -472,7 +472,7 @@ public class Game implements Cloneable, Serializable {
         return this.time;
     }
 
-    private static boolean ai = true;
+    private static boolean ai = false;
 
     public Component getComponentAt(int x, int y) {
         if(x < 0 || y < 0) {
@@ -503,14 +503,14 @@ public class Game implements Cloneable, Serializable {
     public Game mouseClicked(int x, int y) {
 
 
-        if(!ai && getGameState() != State.Take) { // && turn != 0) {
-            // lets try the AI
-            ai = true;
-            Tree tree = new Tree(turn, this);
-            tree.performTurn();
-            ai = false;
-            return this;
-        }
+//        if(!ai && getGameState() != State.Take && turn != 0) {
+//            // lets try the AI
+//            ai = true;
+//            Tree tree = new Tree(turn, this);
+//            tree.performTurn();
+//            ai = false;
+//            return this;
+//        }
 
 
         Component component = getComponentAt(x, y);
@@ -671,6 +671,10 @@ public class Game implements Cloneable, Serializable {
         int maxGlass = 0;
         int plastic6count = 0;
 
+        boolean hasGold = false;
+        boolean hasSilver = false;
+        boolean hasBronze = false;
+
         for(Component component : hands.get(player)) {
             if(component instanceof Cardboard) {
                 Cardboard cardboard = (Cardboard)component;
@@ -698,6 +702,22 @@ public class Game implements Cloneable, Serializable {
                     mapGlass.put(glass.getColor(), 1);
                 }
                 maxGlass = Math.max(maxGlass, mapGlass.get(glass.getColor()));
+            } else if(component instanceof Metal) {
+                Metal metal = (Metal)component;
+                switch (metal.getType()) {
+                    case Gold:
+                        score += 12; //14;
+                        hasGold = true;
+                        break;
+                    case Silver:
+                        score += 12;
+                        hasSilver = true;
+                        break;
+                    case Bronze:
+                        score += 12; //10;
+                        hasBronze = true;
+                        break;
+                }
             }
         }
         for(int value : mapCardboard.keySet()) {
@@ -719,6 +739,15 @@ public class Game implements Cloneable, Serializable {
                 Plastic plastic = (Plastic)component;
                 switch(plastic.getFace().getValue()) {
                     case 1:
+                        if(hasGold) {
+                            score += 3;
+                        }
+                        if(hasSilver) {
+                            score += 2;
+                        }
+                        if(hasBronze) {
+                            score += 1;
+                        }
                     case 2:
                         score += plastic.getFace().getValue();
                         break;
@@ -736,19 +765,6 @@ public class Game implements Cloneable, Serializable {
                         plastic6count++;
                         break;
 
-                }
-            } else if(component instanceof Metal) {
-                Metal metal = (Metal)component;
-                switch (metal.getType()) {
-                    case Gold:
-                        score += 14;
-                        break;
-                    case Silver:
-                        score += 12;
-                        break;
-                    case Bronze:
-                        score += 10;
-                        break;
                 }
             }
         }
