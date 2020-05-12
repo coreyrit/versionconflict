@@ -27,7 +27,13 @@ function printGrid(grid) {
 // printGrid(randomOrlandoGeneration(6, 6, 4))
 // console.log("______________________")
 
-randomWashingtonGeneration("_+_=_", 1)
-randomWashingtonGeneration("_-_=_", 1)
-randomWashingtonGeneration("_*_=_", 1)
-randomWashingtonGeneration("_+_+_=_+_", 2)
+
+console.log(randomHoustonGeneration(9, 9, 5));
+
+console.log(randomOrlandoGeneration(5, 5, 3))
+
+console.log(randomWashingtonGeneration("_+_=_", 1));
+console.log(randomWashingtonGeneration("_-_=_", 1));
+console.log(randomWashingtonGeneration("_*_=_", 1));
+console.log(randomWashingtonGeneration("_+_+_=_+_", 2));
+

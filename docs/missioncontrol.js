@@ -195,5 +195,5 @@ function randomWashingtonGeneration(equation, randomValues) {
         }
     } while (!validateEquation(s));
 
-    console.log(s);
+    return s.split("_").join("0")
 }
