@@ -95,7 +95,9 @@ public class Game implements Cloneable, Serializable {
             if (hands.size() == 1) {
                 return getTake().size() == 0 && turn == 0 && getTable().countFaceDownCardboard() < 2;
             } else {
-                return getTake().size() == 0 && turn == 0 && getTable().countFaceDownCardboard() < hands.size();
+//                return getTake().size() == 0 && turn == 0 && getTable().countFaceDownCardboard() < hands.size();
+                return getTable().countFaceDownCardboard() == 0;
+//                return getTake().size() == 0 && getTable().countFaceDownCardboard() < 2;
             }
         } else {
             return false;
@@ -404,11 +406,13 @@ public class Game implements Cloneable, Serializable {
         }
     }
 
+    private int HAND_SIZE = 10;
+
     private boolean handSelect(Component component) {
        if(state != State.Collect && state != State.RotSwap && getHand().contains(component)) {
            if(state == State.CleanUp) {
                getHand().remove(component);
-               if(getHand().sizeMinusPlastic4s() <= 10) {
+               if(getHand().sizeMinusPlastic4s() <= HAND_SIZE) {
                    endTurn();
                }
                return true;
@@ -439,9 +443,11 @@ public class Game implements Cloneable, Serializable {
 
         getHand().removeTrash();
 
-        if(getHand().sizeMinusPlastic4s() > 10) {
+        if(getHand().sizeMinusPlastic4s() > HAND_SIZE) {
             state = State.CleanUp;
         } else {
+            hands.get(turn).turns++;
+
             state = State.Take;
             turn++;
             if(turn >= hands.size()) {
@@ -503,14 +509,14 @@ public class Game implements Cloneable, Serializable {
     public Game mouseClicked(int x, int y) {
 
 
-//        if(!ai && getGameState() != State.Take && turn != 0) {
-//            // lets try the AI
-//            ai = true;
-//            Tree tree = new Tree(turn, this);
-//            tree.performTurn();
-//            ai = false;
-//            return this;
-//        }
+        if(!ai && getGameState() != State.Take && turn != 0) {
+            // lets try the AI
+            ai = true;
+            Tree tree = new Tree(turn, this);
+            tree.performTurn();
+            ai = false;
+            return this;
+        }
 
 
         Component component = getComponentAt(x, y);
@@ -523,7 +529,8 @@ public class Game implements Cloneable, Serializable {
                         takeCB.flip();
                         table.remove(component);
                         take.add(takeCB);
-                        if(hands.size() > 1) {
+                        if(hands.size() > 1 && takeCB.getFace().isClean()) {
+//                        if(hands.size() > 1 && take.size() == 2) {
                             take.clear();
                             state = State.Rot;
                         } else if(hands.size() == 1 && take.size() == 2) {
@@ -706,15 +713,15 @@ public class Game implements Cloneable, Serializable {
                 Metal metal = (Metal)component;
                 switch (metal.getType()) {
                     case Gold:
-                        score += 12; //14;
+                        score += 15; //14;
                         hasGold = true;
                         break;
                     case Silver:
-                        score += 12;
+                        score += 15;
                         hasSilver = true;
                         break;
                     case Bronze:
-                        score += 12; //10;
+                        score += 15; //10;
                         hasBronze = true;
                         break;
                 }

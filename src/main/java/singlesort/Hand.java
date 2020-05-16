@@ -12,6 +12,7 @@ public class Hand extends ArrayList<Component> {
     private Selection selected;
     private Game game;
     private Goal goal;
+    public int turns = 0;
 
     public Hand(Game game, Goal goal) {
         this.selected = new Selection(game);
@@ -89,4 +90,6 @@ public class Hand extends ArrayList<Component> {
         }
         return count;
     }
+
+
 }

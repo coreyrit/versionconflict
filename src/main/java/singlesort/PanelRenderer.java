@@ -67,7 +67,7 @@ public class PanelRenderer extends JPanel {
                     for(int i = 0; i < game.getHands().size(); i++) {
                         g.setFont(font1);
                         g.setColor(Color.black);
-                        g.drawString("Player " + (i+1) + "(" + game.getScore(i)  + "):", 10, y);
+                        g.drawString("Player " + (i+1) + "(" + game.getScore(i)  + ") - " + game.getHands().get(i).turns + ":", 10, y);
 
                         // draw collection
                         for(singlesort.component.Component comp: game.getHands().get(i)) {
