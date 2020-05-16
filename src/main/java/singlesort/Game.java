@@ -11,7 +11,7 @@ import java.util.List;
 
 public class Game implements Cloneable, Serializable {
     public static Random random = new Random();
-    public static String VERSION = "0.3.0";
+    public static String VERSION = "0.4.0";
 
     public static final int ROWS = 9;
     public static final int COLUMNS = 15;
