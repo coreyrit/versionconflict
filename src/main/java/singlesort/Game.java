@@ -11,7 +11,7 @@ import java.util.List;
 
 public class Game implements Cloneable, Serializable {
     public static Random random = new Random();
-    public static String VERSION = "0.4.0";
+    public static String VERSION = "0.4.1";
 
     public static final int ROWS = 9;
     public static final int COLUMNS = 15;
@@ -115,17 +115,17 @@ public class Game implements Cloneable, Serializable {
         Stack<Goal> goals = new Stack<Goal>();
         if(players == 1) {
             goals.add(new Goal(
-                    Cardboard.createYellowDirtyCardboard(this, 3),
-                    Cardboard.createBlueDirtyCardboard(this, 3),
-                    Cardboard.createGreenDirtyCardboard(this, 3)
+                    Cardboard.createYellowDirtyCardboard(this, 5),
+                    Cardboard.createBlueDirtyCardboard(this, 5),
+                    Cardboard.createGreenDirtyCardboard(this, 5)
             ));
         } else {
             goals.add(new Goal(Cardboard.createYellowDirtyCardboard(this, 1), Cardboard.createYellowDirtyCardboard(this, 2)));
-            goals.add(new Goal(Cardboard.createYellowDirtyCardboard(this, 4), Cardboard.createYellowDirtyCardboard(this, 5)));
+            goals.add(new Goal(Cardboard.createYellowDirtyCardboard(this, 4), Cardboard.createYellowDirtyCardboard(this, 3)));
             goals.add(new Goal(Cardboard.createBlueDirtyCardboard(this, 1), Cardboard.createBlueDirtyCardboard(this, 2)));
-            goals.add(new Goal(Cardboard.createBlueDirtyCardboard(this, 4), Cardboard.createBlueDirtyCardboard(this, 5)));
+            goals.add(new Goal(Cardboard.createBlueDirtyCardboard(this, 4), Cardboard.createBlueDirtyCardboard(this, 3)));
             goals.add(new Goal(Cardboard.createGreenDirtyCardboard(this, 1), Cardboard.createGreenDirtyCardboard(this, 2)));
-            goals.add(new Goal(Cardboard.createGreenDirtyCardboard(this, 4), Cardboard.createGreenDirtyCardboard(this, 5)));
+            goals.add(new Goal(Cardboard.createGreenDirtyCardboard(this, 4), Cardboard.createGreenDirtyCardboard(this, 3)));
         }
 
         Collections.shuffle(goals);
@@ -509,14 +509,13 @@ public class Game implements Cloneable, Serializable {
     public Game mouseClicked(int x, int y) {
 
 
-        if(!ai && getGameState() != State.Take && turn != 0) {
-            // lets try the AI
-            ai = true;
-            Tree tree = new Tree(turn, this);
-            tree.performTurn();
-            ai = false;
-            return this;
-        }
+//        if(!ai && getGameState() != State.Take && turn != 0) {
+//            ai = true;
+//            Tree tree = new Tree(turn, this);
+//            tree.performTurn();
+//            ai = false;
+//            return this;
+//        }
 
 
         Component component = getComponentAt(x, y);
@@ -635,6 +634,12 @@ public class Game implements Cloneable, Serializable {
                 updateHighlights();
             }
         }
+
+        if(gameOver()) {
+            // make sure to finish out the turn
+            endTurn();
+        }
+
         return this;
     }
 
@@ -713,15 +718,15 @@ public class Game implements Cloneable, Serializable {
                 Metal metal = (Metal)component;
                 switch (metal.getType()) {
                     case Gold:
-                        score += 15; //14;
+                        score += 14; //14;
                         hasGold = true;
                         break;
                     case Silver:
-                        score += 15;
+                        score += 14;
                         hasSilver = true;
                         break;
                     case Bronze:
-                        score += 15; //10;
+                        score += 14; //10;
                         hasBronze = true;
                         break;
                 }
